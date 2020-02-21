@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhuqiu.mapper.UserFavoriteRefMapper">
+
+    <select id="findFavoriteByUserId" parameterType="Integer" resultType="Integer">
+        select article_id from user_favorite_ref
+        where user_id = #{userId}
+    </select>
+
+    <select id="findFavoriteByArticleId" parameterType="Integer" resultType="Integer">
+        select user_id from user_favorite_ref
+        where article_id = #{articleId}
+    </select>
+
+    <insert id="insertRecord" parameterType="com.zhuqiu.pojo.UserFavoriteRef">
+        insert into user_favorite_ref
+        (user_id, article_id)
+        values (#{userId, jdbcType=INTEGER}, #{articleId, jdbcType=INTEGER})
+    </insert>
+
+    <select id="countUserFavorite" parameterType="Integer" resultType="Integer">
+        select count(*) from user_favorite_ref
+        where user_id = #{userId}
+    </select>
+
+    <select id="countArticleFavorite" parameterType="Integer" resultType="Integer">
+        select count(*) from user_favorite_ref
+        where article_id = #{articleId}
+    </select>
+
+    <delete id="deleteByUserId" parameterType="Integer">
+        delete from user_favorite_ref
+        where user_id = #{userId}
+    </delete>
+
+    <delete id="deleteByArticleId" parameterType="Integer">
+        delete from user_favorite_ref
+        where article_id = #{articleId}
+    </delete>
+
+    <delete id="deleteRecord" parameterType="com.zhuqiu.pojo.UserFavoriteRef">
+        delete from user_favorite_ref
+        where user_id = #{userId}
+        and article_id = #{articleId}
+    </delete>
+
+
+
+</mapper>

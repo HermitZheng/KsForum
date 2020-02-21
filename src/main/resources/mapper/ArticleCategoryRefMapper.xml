@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhuqiu.mapper.ArticleCategoryRefMapper">
+    <resultMap id="BaseResultMap" type="com.zhuqiu.pojo.Category">
+        <id column="category_id" jdbcType="INTEGER" property="categoryId" />
+        <result column="category_super_id" jdbcType="INTEGER" property="superCategoryId" />
+        <result column="category_name" jdbcType="VARCHAR" property="categoryName" />
+        <!--        <result column="category_description" jdbcType="VARCHAR" property="categoryDescription" />-->
+    </resultMap>
+
+
+    <sql id="Base_Column_List">
+        article_category_ref.category_id, category_super_id, category_name
+        <!--        , category_description      -->
+    </sql>
+
+    <insert id="insertRecord" parameterType="com.zhuqiu.pojo.ArticleCategoryRef">
+        insert into article_category_ref(article_id, category_id)
+        values (#{articleId, jdbcType=INTEGER}, #{categoryId, jdbcType=INTEGER})
+    </insert>
+
+    <delete id="deleteByCategoryId" parameterType="Integer">
+        delete from article_category_ref
+        where category_id = #{categoryId}
+    </delete>
+
+    <delete id="deleteByArticleId" parameterType="Integer">
+        delete from article_category_ref
+        where article_id = #{articleId}
+    </delete>
+
+    <select id="countArticleByCategoryId" parameterType="Integer" resultType="Integer">
+        select count(*) from article_category_ref
+        where category_id = #{categoryId}
+    </select>
+    
+    <select id="listCategoryIdByArticleId" parameterType="Integer" resultType="Integer">
+        select category_id from article_category_ref
+        where article_id = #{articleId}
+    </select>
+
+    <select id="listArticleIdByCategoryId" parameterType="Integer" resultType="Integer">
+        select article_id from article_category_ref
+        where category_id = #{categoryId}
+    </select>
+
+    <select id="listCategoryByArticleId" parameterType="Integer" resultMap="BaseResultMap">
+        select <include refid="Base_Column_List"/>
+        from article_category_ref, category
+        where article_id = #{articleId}
+        and category.category_id = article_category_ref.category_id
+    </select>
+
+</mapper>

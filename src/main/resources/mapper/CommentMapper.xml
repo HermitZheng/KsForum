@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zhuqiu.mapper.CommentMapper">
+    <resultMap id="BaseResultMap" type="com.zhuqiu.pojo.Comment">
+        <id column="comment_id" property="commentId" jdbcType="INTEGER"/>
+        <result column="comment_super_id" property="superId" jdbcType="INTEGER"/>
+        <result column="comment_super_name" property="superAuthorName" jdbcType="VARCHAR"/>
+        <result column="article_id" property="articleId" jdbcType="INTEGER"/>
+        <result column="comment_author_id" property="commentAuthorId" jdbcType="INTEGER"/>
+        <result column="comment_author_name" property="commentAuthorName" jdbcType="VARCHAR"/>
+        <result column="comment_author_avatar" property="commentAuthorAvatar" jdbcType="VARCHAR"/>
+        <result column="comment_content" property="commentContent" jdbcType="VARCHAR"/>
+        <result column="comment_create_time" property="commentCreateTime" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        comment_id, comment_super_id, comment_super_name, article_id, comment_author_id,
+        comment_author_name, comment_author_avatar, comment_content, comment_create_time
+    </sql>
+
+    <select id="findCommentById" parameterType="Integer" resultMap="BaseResultMap">
+        select <include refid="Base_Column_List"/>
+        from comment where comment_id = #{commentId}
+    </select>
+
+    <select id="findAllComment" resultMap="BaseResultMap">
+        select <include refid="Base_Column_List"/>
+        from comment
+    </select>
+
+    <select id="listCommentByArticle" parameterType="Integer" resultMap="BaseResultMap">
+        select <include refid="Base_Column_List"/>
+        from comment where article_id = #{articleId}
+    </select>
+
+    <select id="listCommentByUser" parameterType="Integer" resultMap="BaseResultMap">
+        select <include refid="Base_Column_List"/>
+        from comment where comment_author_id = #{userId}
+    </select>
+
+    <delete id="deleteCommentById" parameterType="Integer">
+        delete from comment
+        where comment_id = #{commentId}
+    </delete>
+    
+    <insert id="insertComment" parameterType="com.zhuqiu.pojo.Comment">
+        insert into comment
+        (comment_super_id, comment_super_name, article_id, comment_author_id,
+         comment_author_name, comment_author_avatar, comment_content, comment_create_time)
+        values (#{superId,jdbcType=INTEGER}, #{superAuthorName,jdbcType=VARCHAR}, #{articleId,jdbcType=INTEGER},
+                #{commentAuthorId,jdbcType=VARCHAR}, #{commentAuthorName,jdbcType=VARCHAR},
+                #{commentAuthorAvatar}, #{commentContent,jdbcType=VARCHAR},#{commentCreateTime,jdbcType=TIMESTAMP})
+    </insert>
+
+    <update id="updateComment" parameterType="com.zhuqiu.pojo.Comment">
+        update comment
+        <set>
+            <if test="superId != null">comment_super_id = #{superId,jdbcType=INTEGER},</if>
+            <if test="superAuthorName != null">comment_super_name = #{superAuthorName,jdbcType=VARCHAR},</if>
+            <if test="articleId != null">article_id = #{articleId,jdbcType=INTEGER},</if>
+            <if test="commentAuthorId != null">comment_author_id = #{commentAuthorId,jdbcType=INTEGER},</if>
+            <if test="commentAuthorName != null">comment_author_name = #{commentAuthorName,jdbcType=VARCHAR},</if>
+            <if test="commentContent != null">comment_content = #{commentContent,jdbcType=VARCHAR},</if>
+            <if test="commentCreateTime != null">comment_create_time = #{commentCreateTime,jdbcType=TIMESTAMP},</if>
+            <if test="commentAuthorAvatar != null">comment_author_avatar = #{commentAuthorAvatar,jdbcType=VARCHAR},</if>
+        </set>
+        where comment_id = #{commentId, jdbcType=INTEGER}
+    </update>
+
+    <select id="countComment" resultType="Integer">
+        select count(*) from comment
+    </select>
+
+    <select id="listChildComment" parameterType="Integer" resultMap="BaseResultMap">
+        select <include refid="Base_Column_List"/>
+        from comment where comment_super_id = #{commentId}
+    </select>
+
+    <select id="listRecentComment" resultMap="BaseResultMap">
+        select <include refid="Base_Column_List"/>
+        from comment order by comment_id DESC
+        limit #{limit}
+    </select>
+
+</mapper>

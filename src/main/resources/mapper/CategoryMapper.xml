@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhuqiu.mapper.CategoryMapper">
+    <resultMap id="BaseResultMap" type="com.zhuqiu.pojo.Category">
+        <id column="category_id" jdbcType="INTEGER" property="categoryId" />
+        <result column="category_super_id" jdbcType="INTEGER" property="superCategoryId" />
+        <result column="category_name" jdbcType="VARCHAR" property="categoryName" />
+<!--        <result column="category_description" jdbcType="VARCHAR" property="categoryDescription" />-->
+    </resultMap>
+
+
+    <sql id="Base_Column_List">
+        category_id, category_super_id, category_name
+        <!--        , category_description      -->
+    </sql>
+
+
+    <select id="findCategoryById" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List" />
+        from category
+        where category_id = #{categoryId,jdbcType=INTEGER}
+    </select>
+
+    <select id="findAllCategory" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from category
+    </select>
+
+    <delete id="deleteCategoryById" parameterType="java.lang.Integer">
+        delete from category
+        where category_id = #{categoryId,jdbcType=INTEGER}
+    </delete>
+
+    <insert id="insertCategory" parameterType="com.zhuqiu.pojo.Category" useGeneratedKeys="true" keyProperty="categoryId">
+        insert into category (category_id, category_super_id, category_name
+        <!--        , category_description      -->
+        )
+        values
+        (
+        #{categoryId,jdbcType=INTEGER}, #{superCategoryId,jdbcType=INTEGER}, #{categoryName,jdbcType=VARCHAR}
+        )
+    </insert>
+
+    <update id="updateCategory" parameterType="map">
+        update category
+        set category_id = #{record.categoryId,jdbcType=INTEGER},
+        category_super_id = #{record.superCategoryId,jdbcType=INTEGER},
+        category_name = #{record.categoryName,jdbcType=VARCHAR}
+        <!--        ,category_description = #{record.categoryDescription,jdbcType=VARCHAR}   -->
+    </update>
+
+    <select id="countCategory" resultType="Integer">
+        select count(*) from category
+    </select>
+
+    <select id="listCategoryByName" parameterType="java.lang.String" resultMap="BaseResultMap">
+        select <include refid="Base_Column_List"/>
+        from category where category_name like concat('%', #{categoryName}, '%')
+    </select>
+
+    <select id="listChildCategory" parameterType="Integer" resultMap="BaseResultMap">
+        select <include refid="Base_Column_List"/>
+        from category
+        where category_super_id = #{categoryId}
+    </select>
+
+    
+
+
+</mapper>

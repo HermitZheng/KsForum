@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.zhuqiu.mapper.UserMapper">
+    <resultMap id="BaseResultMap" type="com.zhuqiu.pojo.User">
+        <id column="user_id" property="userId" jdbcType="INTEGER"/>
+        <result column="user_name" property="userName" jdbcType="VARCHAR"/>
+        <result column="user_pass" property="userPass" jdbcType="VARCHAR"/>
+        <result column="user_nickname" property="userNickname" jdbcType="VARCHAR"/>
+        <result column="user_profile" property="userProfile" jdbcType="VARCHAR"/>
+        <result column="user_avatar" property="userAvatar" jdbcType="VARCHAR"/>
+        <result column="user_register_time" property="userRegisterTime" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+    user_id, user_name, user_pass, user_nickname, user_profile, user_avatar, user_register_time
+    </sql>
+
+    <select id="findUserById" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from user where user_id = #{userId, jdbcType=INTEGER}
+    </select>
+
+    <select id="findUserByName" parameterType="java.lang.String" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from user where user_name = #{userName, jdbcType=VARCHAR}
+    </select>
+
+    <select id="findAllUser" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from user
+    </select>
+
+    <delete id="deleteUserById" parameterType="java.lang.Integer">
+        delete from user
+        where user_id = #{userId, jdbcType=INTEGER}
+    </delete>
+
+    <insert id="insertUser" parameterType="com.zhuqiu.pojo.User" useGeneratedKeys="true" keyProperty="userId">
+        insert into user
+        (user_id, user_name, user_pass,user_nickname,
+         user_profile, user_avatar, user_register_time)
+        values (#{userId,jdbcType=INTEGER}, #{userName,jdbcType=VARCHAR}, #{userPass,jdbcType=VARCHAR},
+        #{userNickname,jdbcType=VARCHAR}, #{userProfile,jdbcType=VARCHAR},
+        #{userAvatar,jdbcType=VARCHAR}, #{userRegisterTime,jdbcType=TIMESTAMP})
+    </insert>
+
+    <update id="updateUser" parameterType="com.zhuqiu.pojo.User">
+        update user
+        <set>
+            <if test="userName != null">user_name = #{userName,jdbcType=VARCHAR},</if>
+            <if test="userPass != null">user_pass = #{userPass,jdbcType=VARCHAR},</if>
+            <if test="userNickname != null">user_nickname = #{userNickname,jdbcType=VARCHAR},</if>
+            <if test="userProfile != null">user_profile = #{userProfile,jdbcType=VARCHAR},</if>
+            <if test="userAvatar != null">user_avatar = #{userAvatar,jdbcType=VARCHAR},</if>
+        </set>
+        where user_id = #{userId, jdbcType=INTEGER}
+    </update>
+
+    <select id="findUserByNickName" parameterType="java.lang.String" resultMap="BaseResultMap">
+        select <include refid="Base_Column_List"/>
+        from user where user_nickname like concat('%', #{userNickname}, '%')
+    </select>
+
+    <select id="countUser" resultType="Integer">
+        select count(*) from user
+    </select>
+
+    <select id="countUserArticle" parameterType="java.lang.Integer" resultType="java.lang.Integer">
+        select count(*) from article
+        where article_user_id = #{userId}
+    </select>
+
+
+    <select id="countUserComment" parameterType="Integer" resultType="Integer">
+        select count(*) from comment
+        where comment_author_id = #{userId}
+    </select>
+
+    <select id="countUserFavorite" parameterType="Integer" resultType="Integer">
+        select count(*) from user_favorite_ref
+        where user_id = #{userId}
+    </select>
+
+    <select id="listFavoriteUser" parameterType="Integer" resultMap="BaseResultMap">
+        select <include refid="Base_Column_List"/>
+        from user, user_favorite_ref
+        where user.user_id = user_favorite_ref.user_id
+        and user_favorite_ref.article_id = #{articleId}
+    </select>
+
+
+</mapper>
+

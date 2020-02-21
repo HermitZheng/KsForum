@@ -1,0 +1,200 @@
+ 
+ 
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>社区主页面</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <link rel="stylesheet" href="../../statics/plugin/layui/css/layui.css">
+  <link rel="stylesheet" href="../../statics/css/global.css">
+</head>
+<body>
+
+<div class="fly-header layui-bg-black">
+  <div class="layui-container">
+    <a class="fly-logo" href="/">
+      <img src="../../statics/img/logo.png" alt="layui">
+    </a>
+    <ul class="layui-nav fly-nav layui-hide-xs">
+      <li class="layui-nav-item">
+        <a href="/"><i class="layui-icon">&#xe705;</i>文章</a>
+      </li>
+      <li class="layui-nav-item">
+        <a href="/"><i class="layui-icon">&#xe62a;</i>分类</a>
+      </li>
+      <li class="layui-nav-item">
+        <a href="/"><i class="layui-icon">&#xe642;</i>发帖</a>
+      </li>
+    </ul>
+    
+    <ul class="layui-nav fly-nav-user">
+      
+      <!-- 未登入的状态 -->
+      <li class="layui-nav-item">
+        <a class="iconfont icon-touxiang layui-hide-xs" href="user/login.html"></a>
+      </li>
+      <li class="layui-nav-item">
+        <a href="user/login.html">登入</a>
+      </li>
+      <li class="layui-nav-item">
+        <a href="user/reg.html">注册</a>
+      </li>
+    </ul>
+  </div>
+</div>
+
+<div class="fly-panel fly-column">
+  <div class="layui-container">
+    <ul class="layui-clear">
+      <li class="layui-hide-xs layui-this"><a href="/">首页</a></li>
+      <li class="layui-hide-xs layui-hide-sm layui-show-md-inline-block"><span class="fly-mid"></span></li>
+      
+      <!-- 用户登入后显示 -->
+      <li class="layui-hide-xs layui-hide-sm layui-show-md-inline-block"><a href="user/index.html">我发表的贴</a></li> 
+      <li class="layui-hide-xs layui-hide-sm layui-show-md-inline-block"><a href="user/index.html">我评论的贴</a></li>
+      <li class="layui-hide-xs layui-hide-sm layui-show-md-inline-block"><a href="user/index.html#collection">我收藏的贴</a></li>
+    </ul> 
+
+    <div class="fly-column-right layui-hide-xs">
+      <form id="search">
+        <div class="layui-inline">
+          <input type="text" name="articleTitle" placeholder="请输入标题" autocomplete="off" class="layui-input">
+        </div>
+        <div class="layui-inline">
+          <button class="layui-btn">
+            <i class="layui-icon"></i>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<div class="layui-container">
+  <div class="layui-row layui-col-space15">
+    <div class="layui-col-md8">
+      <div class="fly-panel">
+        <div class="fly-panel-title fly-filter">
+          <a>置顶</a>
+        </div>
+        <ul class="fly-list">
+          <li>
+            <a href="user/home.html" class="fly-avatar">
+              <img src="https://tva1.sinaimg.cn/crop.0.0.118.118.180/5db11ff4gw1e77d3nqrv8j203b03cweg.jpg" alt="贤心">
+            </a>
+            <h2>
+              <a class="layui-badge">置顶</a>
+              <a href="jie/detail.html">基于 layui 的极简社区页面模版</a>
+            </h2>
+            <div class="fly-list-info">
+              <a href="user/home.html" link>
+                <cite>贤心</cite>
+              </a>
+              <span>刚刚</span>
+              
+              <span class="fly-list-nums">
+                <i class="iconfont icon-pinglun1" title="回答"></i> 66
+              </span>
+            </div>
+            <div class="fly-list-badge">
+              <!--
+              <span class="layui-badge layui-bg-black">置顶</span>
+              <span class="layui-badge layui-bg-red">精帖</span>
+              -->
+            </div>
+          </li>
+        </ul>
+      </div>
+
+      <div class="fly-panel" style="margin-bottom: 0;">
+        
+        <div class="fly-panel-title fly-filter">
+          <a>文章列表</a>
+          <span class="fly-filter-right layui-hide-xs">
+            <a href="" class="layui-this">按最新</a>
+            <span class="fly-mid"></span>
+            <a href="">按热议</a>
+          </span>
+        </div>
+
+        <ul class="fly-list">          
+          <li>
+            <a href="user/home.html" class="fly-avatar">
+              <img src="https://tva1.sinaimg.cn/crop.0.0.118.118.180/5db11ff4gw1e77d3nqrv8j203b03cweg.jpg" alt="贤心">
+            </a>
+            <h2>
+              <a href="jie/detail.html">基于 layui 的极简社区页面模版</a>
+            </h2>
+            <div class="fly-list-info">
+              <a href="user/home.html" link>
+                <cite>贤心</cite>
+              </a>
+              <span>刚刚</span>
+              <span class="fly-list-nums">
+                <i class="iconfont icon-pinglun1" title="回答"></i> 66
+              </span>
+            </div>
+          </li>
+        </ul>
+        <div style="text-align: center">
+          <div class="laypage-main">
+            <a href="jie/index.html" class="laypage-next">更多文章</a>
+          </div>
+        </div>
+
+      </div>
+    </div>
+    <div class="layui-col-md4">
+      <dl class="fly-panel fly-list-one">
+        <dt class="fly-panel-title">热议文章</dt>
+        <dd>
+          <a href="jie/detail.html">基于 layui 的极简社区页面模版</a>
+          <span><i class="iconfont icon-pinglun1"></i> 16</span>
+        </dd>
+        <!-- 无数据时 -->
+        <!--
+        <div class="fly-none">没有相关数据</div>
+        -->
+      </dl>
+    </div>
+
+    <div class="layui-col-md4">
+      <dl class="fly-panel fly-list-one">
+        <dt class="fly-panel-title">文章分类</dt>
+        <dd>
+          <a href="jie/detail.html">计算机基础</a>
+          <span><i class="layui-icon">&#xe705;</i> 16</span>
+        </dd>
+        <!-- 无数据时 -->
+        <!--
+        <div class="fly-none">没有相关数据</div>
+        -->
+      </dl>
+    </div>
+  </div>
+
+
+ 
+<script src="../../statics/plugin/layui/layui.js"></script>
+<script>
+layui.cache.page = '';
+layui.cache.user = {
+  username: '游客'
+  ,uid: -1
+  ,avatar: '../res/images/avatar/00.jpg'
+  ,experience: 83
+  ,sex: '男'
+};
+layui.config({
+  version: "3.0.0"
+  ,base: '../res/mods/' //这里实际使用时，建议改成绝对路径
+}).extend({
+  fly: 'index'
+}).use('fly');
+</script>
+
+<script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_30088308'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "w.cnzz.com/c.php%3Fid%3D30088308' type='text/javascript'%3E%3C/script%3E"));</script>
+
+</body>
+</html>

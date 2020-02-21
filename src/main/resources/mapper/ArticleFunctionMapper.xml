@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.zhuqiu.mapper.ArticleFunctionMapper">
+
+    <resultMap id="BaseResultMap" type="com.zhuqiu.pojo.Article">
+        <id column="article_id" jdbcType="INTEGER" property="articleId" />
+        <result column="article_user_id" jdbcType="INTEGER" property="articleUserId" />
+        <result column="article_title" jdbcType="VARCHAR" property="articleTitle" />
+        <result column="article_like_count" jdbcType="INTEGER" property="articleLikeCount" />
+        <result column="article_view_count" jdbcType="INTEGER" property="articleViewCount" />
+        <result column="article_create_time" jdbcType="TIMESTAMP" property="articleCreateTime" />
+        <result column="article_update_time" jdbcType="TIMESTAMP" property="articleUpdateTime" />
+        <result column="article_status" jdbcType="INTEGER" property="articleStatus"/>
+    </resultMap>
+
+    <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="com.zhuqiu.pojo.Article">
+        <result column="article_content" jdbcType="LONGVARCHAR" property="articleContent" />
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        article.article_id, article_user_id, article_title, article_like_count, article_view_count,
+        article_create_time, article_update_time, article_status
+    </sql>
+
+    <sql id="Blob_Column_List">
+        ,article_content
+    </sql>
+
+    <select id="listArticleByViewCount" resultMap="BaseResultMap">
+        select <include refid="Base_Column_List"/>
+        from article
+        where (article_status = 1 or article_status = 2)
+        order by article_view_count DESC, article_id DESC
+        limit #{limit}
+    </select>
+
+    <select id="listArticleByLikeCount" resultMap="BaseResultMap">
+        select <include refid="Base_Column_List"/>
+        from article
+        where (article_status = 1 or article_status = 2)
+        order by article_like_count DESC, article_id DESC
+        limit #{limit}
+    </select>
+
+    <select id="listArticleByCommentCount" resultMap="BaseResultMap">
+        select <include refid="Base_Column_List"/>
+        from article
+        where (article_status = 1 or article_status = 2)
+        order by article_comment_count DESC, article_id DESC
+        limit #{limit}
+    </select>
+
+    <!--收藏最多的文章-->
+    <select id="listArticleByFavoriteCount" resultMap="BaseResultMap">
+        select <include refid="Base_Column_List"/>
+        from article
+        where (article_status = 1 or article_status = 2)
+        order by article_favorite_count DESC, article_id DESC
+        limit #{limit}
+    </select>
+
+    <!--获得随机文章-->
+    <select id="listRandomArticle" resultMap="BaseResultMap">
+        select <include refid="Base_Column_List"/>
+        from article
+        where (article_status = 1 or article_status = 2)
+        ORDER BY RAND()
+        limit #{limit}
+    </select>
+
+
+    <!--获得最新发布的文章-->
+    <select id="getLastCreateArticle" resultMap="BaseResultMap">
+        select <include refid="Base_Column_List"/>
+        from article
+        where (article_status = 1 or article_status = 2)
+        order by article_create_time DESC
+        limit #{limit}
+    </select>
+
+    <!--获得最后更新的记录-->
+    <select id="getLastUpdateArticle" resultMap="BaseResultMap">
+        select <include refid="Base_Column_List"/>
+        from article
+        where (article_status = 1 or article_status = 2)
+        order by article_update_time DESC
+        limit #{limit}
+    </select>
+
+    <update id="updateCommentCount" parameterType="Integer">
+        update article
+        set article_comment_count =
+        (
+            select count(*) from `comment`
+            where article.article_id = comment.article_id
+        )
+        where article_id = #{articleId}
+    </update>
+
+    <update id="updateFavoriteCount" parameterType="Integer">
+        update article
+        set article_favorite_count =
+        (
+            select count(*) from user_favorite_ref
+            where article.article_id = user_favorite_ref.article_id
+        )
+        where article_id = #{articleId}
+    </update>
+
+    <select id="updateViewCount" parameterType="Integer">
+        update article
+        set article_view_count = article_view_count + 1
+        where article_id = #{articleId}
+    </select>
+    
+    <select id="updateLikeCount" parameterType="Integer">
+        update article
+        set article_like_count = article_like_count + 1
+        where article_id = #{articleId}
+    </select>
+
+    <!--通过分页查询文章-->
+    <select id="pageArticle" resultMap="BaseResultMap">
+        select <include refid="Base_Column_List"/>
+        from article
+        order by article_id DESC
+        limit #{pageIndex},#{pageSize}
+    </select>
+
+
+    <!--获得下一篇的文章-->
+    <select id="getAfterArticle" resultMap="BaseResultMap">
+        select <include refid="Base_Column_List"/>
+        from article
+        <where>
+            article_id &gt; #{articleId}
+        </where>
+        order by article_id
+        limit 1
+    </select>
+
+    <!--获得上一篇的文章-->
+    <select id="getPreArticle" resultMap="BaseResultMap">
+        select <include refid="Base_Column_List"/>
+        from article
+        <where>
+            article_id &lt; #{articleId}
+        </where>
+        order by article_id
+        limit 1
+    </select>
+</mapper>

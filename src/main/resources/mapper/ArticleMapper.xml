@@ -1,0 +1,244 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.zhuqiu.mapper.ArticleMapper">
+    <resultMap id="BaseResultMap" type="com.zhuqiu.pojo.Article">
+        <id column="article_id" jdbcType="INTEGER" property="articleId" />
+        <result column="article_user_id" jdbcType="INTEGER" property="articleUserId" />
+        <result column="article_title" jdbcType="VARCHAR" property="articleTitle" />
+        <result column="article_like_count" jdbcType="INTEGER" property="articleLikeCount" />
+        <result column="article_view_count" jdbcType="INTEGER" property="articleViewCount" />
+        <result column="article_comment_count" jdbcType="INTEGER" property="articleCommentCount" />
+        <result column="article_favorite_count" jdbcType="INTEGER" property="articleFavoriteCount" />
+        <result column="article_create_time" jdbcType="TIMESTAMP" property="articleCreateTime" />
+        <result column="article_update_time" jdbcType="TIMESTAMP" property="articleUpdateTime" />
+        <result column="article_status" jdbcType="INTEGER" property="articleStatus"/>
+    </resultMap>
+
+    <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="com.zhuqiu.pojo.Article">
+        <result column="article_content" jdbcType="LONGVARCHAR" property="articleContent" />
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        article_id, article_user_id, article_title, article_like_count, article_view_count,
+        article_comment_count, article_favorite_count, article_create_time, article_update_time,
+        article_status
+    </sql>
+
+    <sql id="Blob_Column_List">
+        ,article_content
+    </sql>
+
+
+    <select id="findArticleById" parameterType="java.lang.Integer" resultMap="ResultMapWithBLOBs">
+        select
+        <include refid="Base_Column_List" />
+        <include refid="Blob_Column_List" />
+        from article
+        where article_id = #{articleId,jdbcType=INTEGER}
+    </select>
+
+    <select id="findArticleNotWithContent" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List" />
+        from article
+        where article_id = #{articleId,jdbcType=INTEGER}
+    </select>
+
+    <select id="findAllArticle" resultMap="ResultMapWithBLOBs">
+        select
+        <include refid="Base_Column_List"/>
+        <include refid="Blob_Column_List" />
+        from article
+        <where>
+            <if test="keywords != null">
+                article.article_title LIKE concat('%', #{keywords}, '%') AND
+            </if>
+            <if test="userId != null">
+                article.article_user_id = #{userId} AND
+            </if>
+            <if test="articleStatus != null">
+                article.article_status = #{articleStatus} AND
+            </if>
+            <if test="categoryId != null">
+                article.article_id IN (
+                SELECT article_category_ref.article_id FROM article_category_ref
+                WHERE article_category_ref.category_id = #{categoryId}
+                ) AND
+            </if>
+            1 = 1
+        </where>
+        <if test="limit != null">
+            limit #{limit}
+        </if>
+    </select>
+
+    <select id="findAllArticleNotWithContent" resultMap="BaseResultMap">
+        select <include refid="Base_Column_List"/>
+        from article
+        <where>
+            <if test="keywords != null">
+                article.article_title LIKE concat('%', #{keywords}, '%') AND
+            </if>
+            <if test="userId != null">
+                article.article_user_id = #{userId} AND
+            </if>
+            <if test="articleStatus != null">
+                article.article_status = #{articleStatus} AND
+            </if>
+            <if test="categoryId != null">
+                article.article_id IN (
+                SELECT article_category_ref.article_id FROM article_category_ref
+                WHERE article_category_ref.category_id = #{categoryId}
+                ) AND
+            </if>
+            1 = 1
+        </where>
+        <if test="limit != null">
+            limit #{limit}
+        </if>
+    </select>
+
+
+
+    <select id="findArticleByTitle" parameterType="java.lang.String" resultMap="BaseResultMap">
+        select <include refid="Base_Column_List"/>
+        from article where article_title like concat('%', #{articleTitle}, '%')
+        and (article_status = 1 or article_status = 2)
+    </select>
+
+    <delete id="deleteArticleById" parameterType="java.lang.Integer">
+        delete from article
+        where article_id = #{articleId,jdbcType=INTEGER}
+    </delete>
+
+    <delete id="deleteBatch" parameterType="list">
+        delete from article
+        <if test="ids != null">
+            where article_id in
+            <foreach collection="ids" open="(" close=")" separator="," item="id">
+                #{id}
+            </foreach>
+        </if>
+    </delete>
+
+    <insert id="insertArticle" parameterType="com.zhuqiu.pojo.Article" useGeneratedKeys="true" keyProperty="articleId">
+        insert into article (article_id, article_user_id, article_title,
+        article_like_count, article_view_count, article_comment_count,
+        article_favorite_count, article_create_time,
+        article_update_time, article_content, article_status
+        )
+        values (#{articleId,jdbcType=INTEGER}, #{articleUserId,jdbcType=INTEGER}, #{articleTitle,jdbcType=VARCHAR},
+        #{articleLikeCount,jdbcType=INTEGER}, #{articleViewCount,jdbcType=INTEGER}, #{articleCommentCount,jdbcType=INTEGER},
+        #{articleFavoriteCount,jdbcType=INTEGER}, #{articleCreateTime,jdbcType=TIMESTAMP},
+        #{articleUpdateTime,jdbcType=TIMESTAMP}, #{articleContent,jdbcType=LONGVARCHAR}, #{articleStatus,jdbcType=INTEGER}
+        )
+    </insert>
+
+    <update id="updateArticle" parameterType="map">
+        update article
+        <set>
+            <if test="articleTitle != null">article_title = #{articleTitle,jdbcType=VARCHAR},</if>
+            <if test="articleUserId != null">article_user_id = #{articleUserId,jdbcType=INTEGER},</if>
+            <if test="articleViewCount != null">article_view_count = #{articleViewCount,jdbcType=INTEGER},</if>
+            <if test="articleLikeCount != null">article_like_count = #{articleLikeCount,jdbcType=INTEGER},</if>
+            <if test="articleCommentCount != null">article_comment_count = #{articleCommentCount,jdbcType=INTEGER},</if>
+            <if test="articleFavoriteCount != null">article_favorite_count = #{articleFavoriteCount,jdbcType=INTEGER},</if>
+            <if test="articleCreateTime != null">article_create_time = #{articleCreateTime,jdbcType=TIMESTAMP},</if>
+            <if test="articleUpdateTime != null">article_update_time = #{articleUpdateTime,jdbcType=TIMESTAMP},</if>
+            <if test="articleStatus != null">article_status = #{articleStatus,jdbcType=INTEGER},</if>
+            <if test="articleContent != null">article_content = #{articleContent,jdbcType=LONGVARCHAR},</if>
+        </set>
+        where article_id = #{articleId}
+    </update>
+
+    <select id="countArticle" resultType="INTEGER">
+        select count(*) from article
+        where article_status = 1 or article_status = 2
+    </select>
+
+    <select id="countAllArticleView" resultType="INTEGER">
+        select sum(article_view_count) from article
+    </select>
+
+    <select id="countAllArticleComment" resultType="INTEGER">
+        select count(*) from comment
+    </select>
+
+    <select id="countArticleViewById" parameterType="INTEGER" resultType="INTEGER">
+        select article_view_count from article
+        where article_id = #{articleId}
+    </select>
+
+    <select id="countArticleLikeById" parameterType="INTEGER" resultType="INTEGER">
+        select article_like_count from article
+        where article_id = #{articleId}
+    </select>
+
+    <update id="updateCommentCount" parameterType="INTEGER">
+        update article
+        set article_comment_count =
+        (
+            select count(*) from `comment`
+            where article.article_id = comment.article_id
+        )
+        where article_id = #{articleId}
+    </update>
+
+    <update id="updateFavoriteCount" parameterType="INTEGER">
+        update article
+        set article_favorite_count =
+        (
+            select count(*) from `user_favorite_ref`
+            where user_favorite_ref.article_id = article.article_id
+        )
+        where article_id = #{articleId}
+    </update>
+
+
+    <select id="listUserArticle" parameterType="Integer" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from article where article_user_id = #{userId}
+        and article_status != 0
+    </select>
+
+    <select id="findArticleByCategoryId" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List" />
+        from article, article_category_ref
+        where
+            article.article_id = article_category_ref.article_id and
+            article_category_ref.category_id = #{catgeoyrId} and
+            (article_status = 1 or article_status = 2)
+        limit #{limit}
+    </select>
+
+    <select id="findArticleByCategoryIds" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List" />
+        from article, article_category_ref
+        <where>
+            article.article_id = article_category_ref.article_id and
+            (article_status = 1 or article_status = 2)
+            <if test="categoryIds != null">
+                and article_category_ref.category_id in
+                <foreach collection="categoryIds" open="(" close=")" separator="," item="id">
+                    #{id}
+                </foreach>
+            </if>
+        </where>
+        limit #{limit}
+    </select>
+
+    <select id="ListFavoriteArticle" parameterType="Integer" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List" />
+        from article, user_favorite_ref
+        where
+            article.article_id = user_favorite_ref.article_id
+            and user_favorite_ref.user_id = #{userId}
+            and (article_status = 1 or article_status = 2)
+    </select>
+
+</mapper>

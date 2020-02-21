@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context
+        https://www.springframework.org/schema/context/spring-context.xsd
+        http://www.springframework.org/schema/aop
+        http://www.springframework.org/schema/aop/spring-aop.xsd
+        http://www.springframework.org/schema/tx
+        http://www.springframework.org/schema/tx/spring-tx.xsd">
+
+
+    <context:component-scan base-package="com.zhuqiu.mapper" />
+    <!-- 配置整合mybatis -->
+    <!-- 1.关联数据库文件 -->
+    <context:property-placeholder location="classpath:druid.properties"/>
+
+    <!-- 2.数据库连接池 -->
+    <!--数据库连接池
+dbcp  半自动化操作  不能自动连接
+c3p0  自动化操作（自动的加载配置文件 并且设置到对象里面）
+    -->
+    <bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource"
+          init-method="init" destroy-method="close">
+        <!-- 基本属性 url、user、password -->
+        <property name="url" value="${druid.url}" />
+        <property name="username" value="${druid.username}" />
+        <property name="password" value="${druid.password}" />
+
+        <!-- 配置初始化大小、最小、最大 -->
+        <property name="initialSize" value="${druid.initialSize}" />
+        <property name="minIdle" value="${druid.minIdle}" />
+        <property name="maxActive" value="${druid.maxActive}" />
+        <!-- 配置从连接池获取连接等待超时的时间 -->
+        <property name="maxWait" value="${druid.maxWait}" />
+    </bean>
+
+    <!-- 3.配置SqlSessionFactory对象 -->
+    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <!-- 注入数据库连接池 -->
+        <property name="dataSource" ref="dataSource"/>
+        <!-- 配置Mybatis全局配置文件:mybatis-config.xml -->
+        <property name="configLocation" value="classpath:mybatis/mybatis-config.xml"/>
+        <!--mapper.xml所在位置     !!! 重要 !!!-->
+        <property name="mapperLocations" value="classpath*:mapper/*Mapper.xml" />
+    </bean>
+
+    <!-- 4.配置扫描Dao接口包，动态实现Dao接口注入到spring容器中 -->
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <!-- 注入sqlSessionFactory -->
+        <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"/>
+        <!-- 给出需要扫描Dao接口包 -->
+        <property name="basePackage" value="com.zhuqiu.mapper"/>
+    </bean>
+
+
+    <!--配置事务通知-->
+    <tx:advice id="txAdvice" transaction-manager="transactionManager">
+        <tx:attributes>
+            <!--配置哪些方法使用什么样的事务,配置事务的传播特性-->
+            <!--如果当前没有事务，就新建一个事务，如果已存在一个事务中，加入到这个事务中-->
+            <tx:method name="add*" propagation="REQUIRED"/>
+            <tx:method name="insert*" propagation="REQUIRED"/>
+            <tx:method name="delete*" propagation="REQUIRED"/>
+            <tx:method name="update*" propagation="REQUIRED"/>
+            <!--支持当前事务，如果没有当前事务，就以非事务方法执行。-->
+            <tx:method name="find*" propagation="SUPPORTS" read-only="true"/>
+            <tx:method name="count*" propagation="SUPPORTS" read-only="true"/>
+            <tx:method name="get*" propagation="SUPPORTS" read-only="true"/>
+            <tx:method name="list*" propagation="SUPPORTS" read-only="true"/>
+            <tx:method name="page*" propagation="SUPPORTS" read-only="true"/>
+        </tx:attributes>
+    </tx:advice>
+
+    <!--配置aop织入事务-->
+    <aop:config>
+        <aop:pointcut id="txPointcut" expression="execution(* com.zhuqiu.mapper.*.*(..))"/>
+        <aop:advisor advice-ref="txAdvice" pointcut-ref="txPointcut"/>
+    </aop:config>
+</beans>
