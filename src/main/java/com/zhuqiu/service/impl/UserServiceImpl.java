@@ -40,6 +40,18 @@ public class UserServiceImpl implements UserService {
     private UserFavoriteRefMapper userFavoriteRefMapper;
 
     @Override
+    public User findAdminByName(String userName) {
+        User user = null;
+        try {
+            user = userMapper.findAdminByName(userName);
+        } catch (Exception e) {
+            e.printStackTrace();
+            log.error("根据用户名查找用户失败：userName:{}, cause:{}", userName, e);
+        }
+        return user;
+    }
+
+    @Override
     public User findUserById(Integer userId) {
         User user = null;
         try {
@@ -215,7 +227,10 @@ public class UserServiceImpl implements UserService {
     @Override
     public Integer addFavorite(Integer userId, Integer articleId) {
         try {
-            userFavoriteRefMapper.insertRecord(new UserFavoriteRef(userId, articleId));
+            List<Integer> articleIdList = userFavoriteRefMapper.findFavoriteByUserId(userId);
+            if (!articleIdList.contains(articleId)){
+                userFavoriteRefMapper.insertRecord(new UserFavoriteRef(userId, articleId));
+            }
         } catch (Exception e) {
             e.printStackTrace();
             log.error("用户收藏失败：userId:{}, articleId:{}, cause:{}", userId, articleId, e);

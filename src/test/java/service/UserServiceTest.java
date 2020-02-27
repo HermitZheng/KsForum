@@ -8,9 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 /**
  * @author zhuqiu
@@ -19,6 +18,7 @@ import java.util.List;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations={"classpath:spring/applicationContext.xml"})
+@WebAppConfiguration
 public class UserServiceTest {
 
     @Autowired
@@ -36,6 +36,14 @@ public class UserServiceTest {
 
         User user1 = userService.insertUser(user);
         System.out.println(user1);
+    }
+
+    @Test
+    @Transactional   //标明此方法需使用事务
+    @Rollback(true)  //标明使用完此方法后事务不回滚,true时为回滚
+    public void findName(){
+        User user = userService.findUserByName("register1");
+        System.out.println(user==null);
     }
 
     @Test

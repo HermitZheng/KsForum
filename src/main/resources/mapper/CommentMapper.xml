@@ -14,7 +14,7 @@
     </resultMap>
 
     <sql id="Base_Column_List">
-        comment_id, comment_super_id, comment_super_name, article_id, comment_author_id,
+        comment_id, comment_super_id, comment_super_name, article_id, article_title, comment_author_id,
         comment_author_name, comment_author_avatar, comment_content, comment_create_time
     </sql>
 
@@ -45,10 +45,10 @@
     
     <insert id="insertComment" parameterType="com.zhuqiu.pojo.Comment">
         insert into comment
-        (comment_super_id, comment_super_name, article_id, comment_author_id,
+        (comment_super_id, comment_super_name, article_id, article_title, comment_author_id,
          comment_author_name, comment_author_avatar, comment_content, comment_create_time)
         values (#{superId,jdbcType=INTEGER}, #{superAuthorName,jdbcType=VARCHAR}, #{articleId,jdbcType=INTEGER},
-                #{commentAuthorId,jdbcType=VARCHAR}, #{commentAuthorName,jdbcType=VARCHAR},
+                #{articleTitle,jdbcType=VARCHAR}, #{commentAuthorId,jdbcType=INTEGER}, #{commentAuthorName,jdbcType=VARCHAR},
                 #{commentAuthorAvatar}, #{commentContent,jdbcType=VARCHAR},#{commentCreateTime,jdbcType=TIMESTAMP})
     </insert>
 
@@ -58,6 +58,7 @@
             <if test="superId != null">comment_super_id = #{superId,jdbcType=INTEGER},</if>
             <if test="superAuthorName != null">comment_super_name = #{superAuthorName,jdbcType=VARCHAR},</if>
             <if test="articleId != null">article_id = #{articleId,jdbcType=INTEGER},</if>
+            <if test="articleTitle != null">article_title = #{articleTitle,jdbcType=VARCHAR},</if>
             <if test="commentAuthorId != null">comment_author_id = #{commentAuthorId,jdbcType=INTEGER},</if>
             <if test="commentAuthorName != null">comment_author_name = #{commentAuthorName,jdbcType=VARCHAR},</if>
             <if test="commentContent != null">comment_content = #{commentContent,jdbcType=VARCHAR},</if>

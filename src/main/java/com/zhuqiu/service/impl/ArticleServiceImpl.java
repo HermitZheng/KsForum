@@ -34,6 +34,8 @@ public class ArticleServiceImpl implements ArticleService {
     @Autowired(required = false)
     private UserMapper userMapper;
 
+    @Autowired(required = false)
+    private ArticleCategoryRefMapper categoryRefMapper;
 
 
     @Override
@@ -102,7 +104,9 @@ public class ArticleServiceImpl implements ArticleService {
         try {
             articleList = articleMapper.findAllArticleNotWithContent(criteria);
             for (Article article : articleList) {
+                List<Category> categoryList = categoryRefMapper.listCategoryByArticleId(article.getArticleId());
                 User user = userMapper.findUserById(article.getArticleUserId());
+                article.setCategoryList(categoryList);
                 article.setUser(user);
             }
         } catch (Exception e) {
@@ -172,6 +176,7 @@ public class ArticleServiceImpl implements ArticleService {
     public void deleteArticle(Integer articleId) {
         try {
             articleMapper.deleteArticleById(articleId);
+            articleCategoryRefMapper.deleteByArticleId(articleId);
         } catch (Exception e) {
             e.printStackTrace();
             log.error("删除文章失败，articleId:{}, cause:{}", articleId, e);

@@ -132,7 +132,7 @@ public class BackCommentController {
         commentService.insertComment(comment);
         articleService.updateCommentCount(comment.getArticleId());
 
-        return "redirect:/back/comment";
+        return "redirect:/home/article/" + comment.getArticleId();
     }
 
 

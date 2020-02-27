@@ -15,6 +15,13 @@ import java.util.List;
 public interface UserService {
 
     /**
+     * 按用户名查询用户（用于管理员登录）
+     * @param userName
+     * @return User
+     */
+    User findAdminByName(String userName);
+
+    /**
      * 按用户Id查询单个用户
      * @param userId
      * @return 一个用户

@@ -20,7 +20,7 @@
     </resultMap>
 
     <sql id="Base_Column_List">
-        article_id, article_user_id, article_title, article_like_count, article_view_count,
+        article.article_id, article_user_id, article_title, article_like_count, article_view_count,
         article_comment_count, article_favorite_count, article_create_time, article_update_time,
         article_status
     </sql>
@@ -57,14 +57,18 @@
             <if test="userId != null">
                 article.article_user_id = #{userId} AND
             </if>
-            <if test="articleStatus != null">
-                article.article_status = #{articleStatus} AND
-            </if>
             <if test="categoryId != null">
                 article.article_id IN (
                 SELECT article_category_ref.article_id FROM article_category_ref
                 WHERE article_category_ref.category_id = #{categoryId}
                 ) AND
+            </if>
+            <if test="articleStatus != null">
+                article.article_status in
+                <foreach collection="articleStatus" open="(" close=")" separator="," item="status">
+                    #{status}
+                </foreach>
+                AND
             </if>
             1 = 1
         </where>
@@ -83,14 +87,18 @@
             <if test="userId != null">
                 article.article_user_id = #{userId} AND
             </if>
-            <if test="articleStatus != null">
-                article.article_status = #{articleStatus} AND
-            </if>
             <if test="categoryId != null">
                 article.article_id IN (
                 SELECT article_category_ref.article_id FROM article_category_ref
                 WHERE article_category_ref.category_id = #{categoryId}
                 ) AND
+            </if>
+            <if test="articleStatus != null">
+                article.article_status in
+                <foreach collection="articleStatus" open="(" close=")" separator="," item="status">
+                    #{status}
+                </foreach>
+                AND
             </if>
             1 = 1
         </where>
@@ -231,7 +239,7 @@
         limit #{limit}
     </select>
 
-    <select id="ListFavoriteArticle" parameterType="Integer" resultMap="BaseResultMap">
+    <select id="listFavoriteArticle" parameterType="Integer" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List" />
         from article, user_favorite_ref

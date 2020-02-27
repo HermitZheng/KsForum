@@ -68,31 +68,35 @@ public class BackArticleController {
     public String insert(Model model) {
         List<Category> categoryList = categoryService.listCategory();
         model.addAttribute("categoryList", categoryList);
-        model.addAttribute("hold", "文章正文");
+//        model.addAttribute("hold", "文章正文");
         return "/Back/Article/insert";
     }
 
     @RequestMapping(value = "/insertSubmit", method = RequestMethod.POST)
     public String insertSubmit(HttpSession session, ArticleParam articleParam) {
         Article article = new Article();
-        User user = (User) session.getAttribute("user");
+        User user = (User) session.getAttribute("admin");
         if (user != null){
             article.setArticleUserId(user.getUserId());
         }
         article.setArticleTitle(articleParam.getArticleTitle());
         article.setArticleContent(articleParam.getArticleContent());
-        article.setArticleStatus(articleParam.getArticleStatus());
+        Integer status = articleParam.getArticleStatus();
+        article.setArticleStatus(status);
         Date date = new Date();
-        article.setArticleCreateTime(date);
+        if (status != 0) {        //为1则发布， 为0则为草稿
+            article.setArticleCreateTime(date);
+        }
         article.setArticleUpdateTime(date);
 
         List<Category> categoryList = new ArrayList<>();
         if (articleParam.getArticleParentCategoryId() != null) {
             categoryList.add(new Category(articleParam.getArticleParentCategoryId()));
+            if (articleParam.getArticleChildCategoryId() != null) {
+                categoryList.add(new Category(articleParam.getArticleChildCategoryId()));
+            }
         }
-        if (articleParam.getArticleChildCategoryId() != null) {
-            categoryList.add(new Category(articleParam.getArticleChildCategoryId()));
-        }
+
         article.setCategoryList(categoryList);
 
         articleService.insertArticle(article);
@@ -134,8 +138,14 @@ public class BackArticleController {
         article.setArticleId(articleParam.getArticleId());
         article.setArticleTitle(articleParam.getArticleTitle());
         article.setArticleContent(articleParam.getArticleContent());
-        article.setArticleStatus(articleParam.getArticleStatus());
-        article.setArticleUpdateTime(new Date());
+        Integer status = articleParam.getArticleStatus();
+        article.setArticleStatus(status);
+        Integer original = articleService.findArticleNotWithContentById(article.getArticleId()).getArticleStatus();
+        Date date = new Date();
+        if (original == 0 && status != 0) {        //为1则发布， 为0则为草稿
+            article.setArticleCreateTime(date);
+        }
+        article.setArticleUpdateTime(date);
 
         List<Category> categoryList = new ArrayList<>();
         if (articleParam.getArticleParentCategoryId() != null) {

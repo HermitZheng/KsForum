@@ -17,6 +17,13 @@ import java.util.List;
 public interface UserMapper {
 
     /**
+     * 用于管理员登录后台
+     * @param userName
+     * @return
+     */
+    User findAdminByName(String userName);
+
+    /**
      * 按用户Id查询单个用户
      * @param userId
      * @return 一个用户

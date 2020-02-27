@@ -126,7 +126,7 @@ public class BackUserController {
 
     @RequestMapping("/profile")
     public String profile(HttpSession session, Model model) {
-        User sessionUser = (User) session.getAttribute("user");
+        User sessionUser = (User) session.getAttribute("admin");
         User user = userService.findUserById(sessionUser.getUserId());
 
         model.addAttribute("user", user);
@@ -140,8 +140,9 @@ public class BackUserController {
      * @return
      */
     @RequestMapping(value = "/editSubmit", method = RequestMethod.POST)
-    public String editUserSubmit(User user) {
+    public String editUserSubmit(HttpServletRequest request, User user) {
         userService.updateUser(user);
+        request.getSession().setAttribute("admin", user);
         return "redirect:/back/user";
     }
 }

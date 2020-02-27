@@ -20,7 +20,8 @@
 
     <sql id="Base_Column_List">
         article.article_id, article_user_id, article_title, article_like_count, article_view_count,
-        article_create_time, article_update_time, article_status
+        article_comment_count, article_favorite_count, article_create_time, article_update_time,
+        article_status
     </sql>
 
     <sql id="Blob_Column_List">
@@ -124,8 +125,10 @@
     <select id="pageArticle" resultMap="BaseResultMap">
         select <include refid="Base_Column_List"/>
         from article
+        where (article_status = 1 or article_status = 2)
         order by article_id DESC
         limit #{pageIndex},#{pageSize}
+
     </select>
 
 

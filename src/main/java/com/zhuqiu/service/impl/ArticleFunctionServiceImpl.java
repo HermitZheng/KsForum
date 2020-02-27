@@ -46,7 +46,9 @@ public class ArticleFunctionServiceImpl implements ArticleFunctionService {
             articleList = articleMapper.findAllArticle(criteria);
             for (Article article : articleList) {
                 List<Category> categoryList = categoryRefMapper.listCategoryByArticleId(article.getArticleId());
+                User user = userMapper.findUserById(article.getArticleUserId());
                 article.setCategoryList(categoryList);
+                article.setUser(user);
             }
         } catch (Exception e) {
             e.printStackTrace();

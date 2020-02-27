@@ -59,7 +59,7 @@ function insertDraft() {
         $.ajax({
             async: false,
             type: "POST",
-            url:'/back/article/insert',
+            url:'/back/article/insertSubmit',
             contentType : "application/x-www-form-urlencoded; charset=utf-8",
             dataType: "text",
             complete:function () {

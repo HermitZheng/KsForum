@@ -42,8 +42,9 @@
         <input type="hidden" name="superId" value="${comment.commentId}">
         <input type="hidden" name="superAuthorName" value="${comment.commentAuthorName}">
         <input type="hidden" name="articleId" value="${comment.articleId}">
-        <input type="hidden" name="commentAuthorId" value="${sessionScope.user.getUserId}">
-        <input type="hidden" name="commentAuthorAvatar" value="${sessionScope.user.getUserAvatar}">
+        <input type="hidden" name="articleTitle" value="${comment.articleTitle}">
+        <input type="hidden" name="commentAuthorId" value="${sessionScope.admin.userId}">
+        <input type="hidden" name="commentAuthorAvatar" value="${sessionScope.admin.userAvatar}">
 <%--        <input type="hidden" name="commentRole" value="1">--%>
 
         <div class="layui-form-item layui-form-text">
@@ -56,7 +57,7 @@
         <div class="layui-form-item">
             <label class="layui-form-label">我的昵称 </label>
             <div class="layui-input-block">
-                <input type="text" name="commentAuthorName"  value="${sessionScope.user.getUserNickname()}" class="layui-input">
+                <input type="text" name="commentAuthorName"  value="${sessionScope.admin.getUserNickname()}" class="layui-input">
             </div>
         </div>
         <div class="layui-form-item layui-form-text">

@@ -54,6 +54,7 @@
             <div class="layui-form layui-tab-content" id="LAY_ucm" style="padding: 20px 0;">
                 <div class="layui-tab-item layui-show">
                     <div class="layui-form layui-form-pane">
+
                         <form id="admin_form" method="post">
                             <div class="layui-form-item">
                                 <label for="admin_name" class="layui-form-label">账号</label>
@@ -71,12 +72,13 @@
                                 </div>
                             </div>
                             <div class="layui-form-item">
-                                <input type="button" id="submit-btn" class="layui-btn" lay-filter="*" lay-submit value="立即登录"></input>
+                                <input type="button" id="submit-btn" class="layui-btn" lay-filter="*" lay-submit value="立即登录">
                                 <!--                                <span style="padding-left:20px;">-->
                                 <!--                                  <a href="forget.html">忘记密码？</a>-->
                                 <!--                                </span>-->
                             </div>
                         </form>
+
                     </div>
                 </div>
             </div>
@@ -96,8 +98,8 @@
 <script type="text/javascript">
 
     $("#submit-btn").click(function () {
-        var user = $("#user_name").val();
-        var password = $("#user_pass").val();
+        var user = $("#admin_name").val();
+        var password = $("#admin_pass").val();
         if (user == "") {
             alert("用户名不可为空!");
         } else if (password == "") {

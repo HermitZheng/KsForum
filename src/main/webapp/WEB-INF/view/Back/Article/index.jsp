@@ -44,8 +44,9 @@
             <table class="layui-table">
                 <colgroup>
                     <col width="300">
-                    <col width="150">
-                    <col width="150">
+                    <col width="130">
+                    <col width="100">
+                    <col width="80">
                     <col width="100">
                     <col width="50">
                 </colgroup>
@@ -53,6 +54,7 @@
                 <tr>
                     <th>标题</th>
                     <th>所属分类</th>
+                    <th>作者昵称</th>
                     <th>发布时间</th>
                     <th>操作</th>
                     <th>id</th>
@@ -86,6 +88,9 @@
 <%--                                </c:otherwise>--%>
 <%--                            </c:choose>--%>
 <%--                        </td>--%>
+                        <td>
+                            <a href="/home/user/${a.articleUserId}">${a.user.userNickname}</a>
+                        </td>
                         <td>
                             <fmt:formatDate value="${a.articleCreateTime}"
                                             pattern="yyyy-MM-dd HH:mm:ss"/>

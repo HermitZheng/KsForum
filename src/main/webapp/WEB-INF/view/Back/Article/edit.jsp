@@ -79,6 +79,15 @@
             </div>
         </div>
         <div class="layui-form-item">
+            <label class="layui-form-label">是否发布</label>
+            <div class="layui-input-block">
+                <input type="radio" name="articleStatus" value="1" title="发布" checked>
+                <input type="radio" name="articleStatus" value="0" title="草稿">
+                <input type="radio" name="articleStatus" value="2" title="置顶">
+                <input type="radio" name="articleStatus" value="3" title="公告">
+            </div>
+        </div>
+        <div class="layui-form-item">
             <div class="layui-input-block">
                 <button class="layui-btn" lay-submit="" lay-filter="demo1">保存</button>
                 <button type="reset" class="layui-btn layui-btn-primary">重置</button>
@@ -97,8 +106,6 @@
 <rapid:override name="footer-script">
 
     <script>
-
-
         layui.use(['form', 'layedit', 'laydate'], function () {
             var form = layui.form
                 , layer = layui.layer

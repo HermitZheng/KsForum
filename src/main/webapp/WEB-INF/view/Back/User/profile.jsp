@@ -40,7 +40,7 @@
               <a href="/back/index">首页</a>
               <a href="/back/user">用户列表</a>
               <c:choose>
-                  <c:when test="${sessionScope.user.userId==user.userId}">
+                  <c:when test="${sessionScope.admin.userId==user.userId}">
                       <a><cite>个人信息</cite></a>
                   </c:when>
                   <c:otherwise>

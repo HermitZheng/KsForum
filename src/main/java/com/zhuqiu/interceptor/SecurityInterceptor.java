@@ -15,7 +15,7 @@ public class SecurityInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         System.out.println("SecurityInterceptor————PreHandle");
-        if (request.getSession().getAttribute("user") == null){
+        if (request.getSession().getAttribute("admin") == null){
             response.sendRedirect("/back/login");
             return false;
         }

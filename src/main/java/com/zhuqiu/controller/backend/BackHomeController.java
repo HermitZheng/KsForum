@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.util.HashMap;
 import java.util.List;
@@ -73,13 +72,13 @@ public class BackHomeController {
      */
     @ResponseBody
     @RequestMapping(value = "/back/loginVerify", method = RequestMethod.POST)
-    public String loginVerify(HttpServletRequest request, HttpServletResponse response) {
+    public String loginVerify(HttpServletRequest request) {
         Map<String, Object> map = new HashMap<>();
         String username = request.getParameter("username");
         String password = request.getParameter("password");
 
-        User user = userService.findUserByName(username);
-        if (user == null || !user.getUserName().equals("admin")) {
+        User user = userService.findAdminByName(username);
+        if (user == null) {
             map.put("status", "error");
             map.put("msg", "用户名或者密码错误！");
         } else if (!user.getUserPass().equals(password)) {
@@ -89,7 +88,7 @@ public class BackHomeController {
             map.put("status", "success");
             map.put("msg", "验证成功！");
 
-            request.getSession().setAttribute("user", user);
+            request.getSession().setAttribute("admin", user);
         }
 
         String result = new JSONObject(map).toString();
@@ -104,7 +103,7 @@ public class BackHomeController {
      */
     @RequestMapping(value = "/back/logout")
     public String logout(HttpSession session)  {
-        session.removeAttribute("user");
+        session.removeAttribute("admin");
         session.invalidate();
         return "redirect:/back/login";
     }

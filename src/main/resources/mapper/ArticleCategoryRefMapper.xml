@@ -30,8 +30,10 @@
     </delete>
 
     <select id="countArticleByCategoryId" parameterType="Integer" resultType="Integer">
-        select count(*) from article_category_ref
+        select count(*) from article_category_ref, article
         where category_id = #{categoryId}
+        and article.article_id = article_category_ref.article_id
+        and article.article_status = 1
     </select>
     
     <select id="listCategoryIdByArticleId" parameterType="Integer" resultType="Integer">

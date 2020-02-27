@@ -18,7 +18,7 @@
     <!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->
     <link rel="shortcut icon" href="/img/logo.png">
     <title>
-        Ks社区后台
+        Ks社区
         <rapid:block name="title"></rapid:block>
     </title>
     <link rel="stylesheet" href="../../../../statics/plugin/layui/css/layui.css">
@@ -32,12 +32,12 @@
 
     <div class="fly-header layui-bg-black">
         <div class="layui-container">
-            <a class="fly-logo" href="/">
+            <a class="fly-logo" href="/home">
                 <img src="../../statics/img/logo.png" alt="layui">
             </a>
             <ul class="layui-nav fly-nav layui-hide-xs">
                 <li class="layui-nav-item">
-                    <a href="/home/article"><i class="layui-icon">&#xe705;</i>文章</a>
+                    <a href="/home/article/page/1"><i class="layui-icon">&#xe705;</i>文章</a>
                 </li>
                 <li class="layui-nav-item">
                     <a href="/home/category"><i class="layui-icon">&#xe62a;</i>分类</a>
@@ -51,10 +51,14 @@
                     <li class="layui-nav-item">
                         <a href="javascript:;">
                             <img src="${sessionScope.user.userAvatar}" class="layui-nav-img">
-                                ${sessionScope.user.userName}
+                                ${sessionScope.user.userNickname}
                         </a>
                         <dl class="layui-nav-child">
-                            <dd><a href="/home/user/profile">个人中心</a></dd>
+                            <dd><a href="/home/user/${sessionScope.user.userId}"></i>我的主页</a></dd>
+                            <dd><a href="/home/user/index"></i>用户中心</a></dd>
+                            <dd><a href="/home/user/setting">基本设置</a></dd>
+                                <%--                            <hr style="margin: 5px 0;">--%>
+                                <%--                            <dd><a href="/home/logout" style="text-align: center;">退出</a></dd>--%>
                         </dl>
                     </li>
                     <li class="layui-nav-item">
@@ -66,7 +70,7 @@
                 <ul class="layui-nav fly-nav-user">
                     <!-- 未登入的状态 -->
                     <li class="layui-nav-item">
-                        <a class="iconfont icon-touxiang layui-hide-xs" href="user/login.html"></a>
+                        <a class="iconfont icon-touxiang layui-hide-xs" href="/home/login"></a>
                     </li>
                     <li class="layui-nav-item">
                         <a href="/home/login">登入</a>
@@ -85,13 +89,13 @@
                 <li class="layui-hide-xs layui-this"><a href="/home">首页</a></li>
                 <li class="layui-hide-xs layui-hide-sm layui-show-md-inline-block"><span class="fly-mid"></span></li>
                 <!-- 用户登入后显示 -->
-                <li class="layui-hide-xs layui-hide-sm layui-show-md-inline-block"><a href="/home/user/myArticle">我发表的贴</a></li>
-                <li class="layui-hide-xs layui-hide-sm layui-show-md-inline-block"><a href="/home/user/myComment">我评论的贴</a></li>
-                <li class="layui-hide-xs layui-hide-sm layui-show-md-inline-block"><a href="/home/user/myFavorite">我收藏的贴</a></li>
+                <li class="layui-hide-xs layui-hide-sm layui-show-md-inline-block"><a href="/home/user/index">我发表的贴</a></li>
+                <li class="layui-hide-xs layui-hide-sm layui-show-md-inline-block"><a href="/home/user/comment">我评论的贴</a></li>
+                <li class="layui-hide-xs layui-hide-sm layui-show-md-inline-block"><a href="/home/user/index">我收藏的贴</a></li>
             </ul>
 
             <div class="fly-column-right layui-hide-xs">
-                <form id="search" action="/home/article/search">
+                <form id="search" action="/home/article/search" method="get">
                     <div class="layui-inline">
                         <input type="text" name="articleTitle" placeholder="请输入标题" autocomplete="off" class="layui-input">
                     </div>

@@ -14,7 +14,7 @@ import java.util.Date;
 @Data
 public class Comment implements Serializable {
 
-    private static final long serialVersionUID = 4788098111983398626L;
+    private static final long serialVersionUID = -5329217357208401878L;
     private Integer commentId;
 
     private String commentContent;
@@ -26,6 +26,8 @@ public class Comment implements Serializable {
     private String superAuthorName;
 
     private Integer articleId;
+
+    private String articleTitle;
 
     private Integer commentAuthorId;
 

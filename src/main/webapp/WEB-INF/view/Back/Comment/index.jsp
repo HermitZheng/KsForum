@@ -79,7 +79,7 @@
                         </div>
                     </td>
                     <td>
-                        <a href="/article/${c.article.articleId}"
+                        <a href="/home/article/${c.article.articleId}"
                            target="_blank">${c.article.articleTitle}</a>
                     </td>
                     <td>

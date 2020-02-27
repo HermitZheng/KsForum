@@ -16,6 +16,13 @@
     user_id, user_name, user_pass, user_nickname, user_profile, user_avatar, user_register_time
     </sql>
 
+    <select id="findAdminByName" parameterType="java.lang.String" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from user where user_name = #{userName, jdbcType=VARCHAR}
+        and role = 1
+    </select>
+
     <select id="findUserById" parameterType="java.lang.Integer" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"/>
@@ -72,6 +79,7 @@
     <select id="countUserArticle" parameterType="java.lang.Integer" resultType="java.lang.Integer">
         select count(*) from article
         where article_user_id = #{userId}
+        and (article_status = 1 or article_status = 2)
     </select>
 
 

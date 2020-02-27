@@ -44,8 +44,8 @@
         <ul class="layui-nav layui-layout-right">
             <li class="layui-nav-item">
                 <a href="javascript:;">
-                    <img src="${sessionScope.user.userAvatar}" class="layui-nav-img">
-                    ${sessionScope.user.userName}
+                    <img src="${sessionScope.admin.userAvatar}" class="layui-nav-img">
+                    ${sessionScope.admin.userNickname}
                 </a>
                 <dl class="layui-nav-child">
                     <dd><a href="/back/user/profile">基本资料</a></dd>

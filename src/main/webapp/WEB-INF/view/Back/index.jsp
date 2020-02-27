@@ -295,7 +295,8 @@
             <div id="dashboard_quick_press" class="postbox ">
                 <div class="inside">
                     <form name="post" method="post" id="insertDraftForm"
-                          class="initial-form hide-if-no-js" action="/back/article/insertDraftSubmit">
+                          class="initial-form hide-if-no-js" action="/back/article/insertSubmit">
+                        <input type="hidden" name="articleStatus" id="status" value="0">
 
                         <div class="layui-form-item">
                             <div class="layui-input-block">
@@ -304,7 +305,7 @@
                         </div>
                         <div class="layui-form-item layui-form-text">
                             <div class="layui-input-block">
-                                <textarea name="articleContent" placeholder="请输入内容(功能未完善)" id="articleContent" class="layui-textarea" required></textarea>
+                                <textarea name="articleContent" placeholder="请输入内容" id="articleContent" class="layui-textarea" required></textarea>
                             </div>
                         </div>
                         <input type="hidden" name="articleStatus" value="0">
