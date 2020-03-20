@@ -22,8 +22,9 @@ public class CategoryTree implements Serializable {
 
     private List<Child> childList;
 
-    public class Child {
+    public class Child implements Serializable {
 
+        private static final long serialVersionUID = -6291811947502338198L;
         private String childName;
 
         private Integer childId;

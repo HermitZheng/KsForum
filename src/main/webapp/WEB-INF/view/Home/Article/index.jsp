@@ -33,7 +33,8 @@
                 </div>
 
                 <c:if test="${empty articleList.list}">
-                    <div class="fly-none" style="min-height: 50px; padding:30px 0; height:auto;"><span>没有任何文章</span></div>
+                    <div class="fly-none" style="min-height: 50px; padding:30px 0; height:auto;"><span>没有任何文章</span>
+                    </div>
                 </c:if>
 
                 <ul id="update" class="fly-list">
@@ -61,21 +62,48 @@
                             </div>
                         </li>
                     </c:forEach>
+                    <table width="461" height="24" border="1" cellpadding="0" cellspacing="0">
+                        <tr>
+                            <td width="199">当前为第${pageIndex}页,共${total}页</td>
+                            <td width="256">
+                                <c:choose>
+                                    <c:when test="${hasPrePage}">
+                                        <a href="/home/article/page/1">首页</a> |
+                                        <a href="/home/article/page/${pageIndex-1}">上一页</a>
+                                    </c:when>
+                                    <c:otherwise>
+                                        首页 | 上一页
+                                    </c:otherwise>
+                                </c:choose>
+
+                                <c:choose>
+                                    <c:when test="${hasNextPage}">
+                                        <a href="/home/article/page/${pageIndex+1}">下一页</a> |
+                                        <a href="/home/article/page/${total}">尾页</a>
+                                    </c:when>
+                                    <c:otherwise>
+                                        下一页 | 尾页
+                                    </c:otherwise>
+                                </c:choose>
+
+                            </td>
+                        </tr>
+                    </table>
                 </ul>
 
-<%--                <div style="border-top: 1px dotted #e2e2e2; text-align: center;">--%>
-<%--                    <div class="laypage-main">--%>
-<%--                        <a href="/home/article/page/${pageIndex-1}" class="laypage-prev">上一页</a>--%>
-<%--                        <a href="/home/article/page/1/">1</a>--%>
-<%--                        <span class="laypage-curr">2</span>--%>
-<%--                        <a href="/home/article/page/3/">3</a>--%>
-<%--                        <a href="/home/article/page/4/">4</a>--%>
-<%--                        <a href="/home/article/page/5/">5</a>--%>
-<%--                        <span>…</span>--%>
-<%--                        <a href="/home/article/page/${lastPage}" class="laypage-last" title="尾页">尾页</a>--%>
-<%--                        <a href="/home/article/page/${pageIndex+1}" class="laypage-next">下一页</a>--%>
-<%--                    </div>--%>
-<%--                </div>--%>
+                    <%--                <div style="border-top: 1px dotted #e2e2e2; text-align: center;">--%>
+                    <%--                    <div class="laypage-main">--%>
+                    <%--                        <a href="/home/article/page/${pageIndex-1}" class="laypage-prev">上一页</a>--%>
+                    <%--                        <a href="/home/article/page/1/">1</a>--%>
+                    <%--                        <span class="laypage-curr">2</span>--%>
+                    <%--                        <a href="/home/article/page/3/">3</a>--%>
+                    <%--                        <a href="/home/article/page/4/">4</a>--%>
+                    <%--                        <a href="/home/article/page/5/">5</a>--%>
+                    <%--                        <span>…</span>--%>
+                    <%--                        <a href="/home/article/page/${lastPage}" class="laypage-last" title="尾页">尾页</a>--%>
+                    <%--                        <a href="/home/article/page/${pageIndex+1}" class="laypage-next">下一页</a>--%>
+                    <%--                    </div>--%>
+                    <%--                </div>--%>
 
             </div>
         </div>
@@ -116,65 +144,65 @@
 </rapid:override>
 
 <rapid:override name="footer-script">
-<%--    <script>--%>
-<%--        layui.use(['laypage', 'layer'], function(){--%>
-<%--            var laypage = layui.laypage--%>
-<%--                ,layer = layui.layer;--%>
+    <%--    <script>--%>
+    <%--        layui.use(['laypage', 'layer'], function(){--%>
+    <%--            var laypage = layui.laypage--%>
+    <%--                ,layer = layui.layer;--%>
 
-<%--        var articleList;--%>
-<%--        $(document).ready(function () {--%>
-<%--            $.ajax({--%>
-<%--                url: "/home/article/get",--%>
-<%--                dataType: "json",--%>
-<%--                type:"post",--%>
-<%--                async: false,--%>
-<%--                success:function (data) {--%>
-<%--                    articleList = data;--%>
-<%--                }--%>
-<%--        })--%>
-<%--        })--%>
+    <%--        var articleList;--%>
+    <%--        $(document).ready(function () {--%>
+    <%--            $.ajax({--%>
+    <%--                url: "/home/article/get",--%>
+    <%--                dataType: "json",--%>
+    <%--                type:"post",--%>
+    <%--                async: false,--%>
+    <%--                success:function (data) {--%>
+    <%--                    articleList = data;--%>
+    <%--                }--%>
+    <%--        })--%>
+    <%--        })--%>
 
-<%--        for (var i=0; i<articleList.length; i++){--%>
-<%--            var item = articleList[i];--%>
-<%--            var html = "<li>\n" +--%>
-<%--                "                            <a href=\"/home/user/" + item.articleUserId +"\" class=\"fly-avatar\">\n" +--%>
-<%--                "                                <img src=\""+ item['user'][0].userAvatar +"\""+ item['user'][0].userNickname +">\n" +--%>
-<%--                "                            </a>\n" +--%>
-<%--                "                            <h2>\n" +--%>
-<%--                "                                <a href=\"/home/article/"+ item.articleId +"\">"+ item.articleTitle +"</a>\n" +--%>
-<%--                "                            </h2>\n" +--%>
-<%--                "                            <div class=\"fly-list-info\">\n" +--%>
-<%--                "                                <a href=\"/home/user/"+ item.articleUserId +"\" link>\n" +--%>
-<%--                "                                    <cite>"+ item['user'][0].userNickname +"</cite>\n" +--%>
-<%--                "                                </a>\n" +--%>
-<%--                "                                <span><fmt:formatDate value=\"" + item.articleUpdateTime +"\"\n" +--%>
-<%--                "                                                      pattern=\"yyyy-MM-dd hh:mm\"/></span>\n" +--%>
-<%--                "                                <span class=\"layui-badge layui-bg-blue\">"+ item['categoryList'][0].categoryName +"</span>\n" +--%>
-<%--                "                                <span class=\"fly-list-nums\">\n" +--%>
-<%--                "                            <i class=\"iconfont icon-pinglun1\" title=\"评论\"></i> "+ item.articleCommentCount +"\n" +--%>
-<%--                "                            </span>\n" +--%>
-<%--                "                            </div>\n" +--%>
-<%--                "                        </li>"--%>
-<%--        }--%>
+    <%--        for (var i=0; i<articleList.length; i++){--%>
+    <%--            var item = articleList[i];--%>
+    <%--            var html = "<li>\n" +--%>
+    <%--                "                            <a href=\"/home/user/" + item.articleUserId +"\" class=\"fly-avatar\">\n" +--%>
+    <%--                "                                <img src=\""+ item['user'][0].userAvatar +"\""+ item['user'][0].userNickname +">\n" +--%>
+    <%--                "                            </a>\n" +--%>
+    <%--                "                            <h2>\n" +--%>
+    <%--                "                                <a href=\"/home/article/"+ item.articleId +"\">"+ item.articleTitle +"</a>\n" +--%>
+    <%--                "                            </h2>\n" +--%>
+    <%--                "                            <div class=\"fly-list-info\">\n" +--%>
+    <%--                "                                <a href=\"/home/user/"+ item.articleUserId +"\" link>\n" +--%>
+    <%--                "                                    <cite>"+ item['user'][0].userNickname +"</cite>\n" +--%>
+    <%--                "                                </a>\n" +--%>
+    <%--                "                                <span><fmt:formatDate value=\"" + item.articleUpdateTime +"\"\n" +--%>
+    <%--                "                                                      pattern=\"yyyy-MM-dd hh:mm\"/></span>\n" +--%>
+    <%--                "                                <span class=\"layui-badge layui-bg-blue\">"+ item['categoryList'][0].categoryName +"</span>\n" +--%>
+    <%--                "                                <span class=\"fly-list-nums\">\n" +--%>
+    <%--                "                            <i class=\"iconfont icon-pinglun1\" title=\"评论\"></i> "+ item.articleCommentCount +"\n" +--%>
+    <%--                "                            </span>\n" +--%>
+    <%--                "                            </div>\n" +--%>
+    <%--                "                        </li>"--%>
+    <%--        }--%>
 
-<%--        laypage.render({--%>
-<%--            elem: 'article'--%>
-<%--            , count: articleList.length--%>
-<%--            , limit: 15--%>
-<%--            ,jump: function(obj){--%>
-<%--                //模拟渲染--%>
-<%--                document.getElementById('page_list').innerHTML = function(){--%>
-<%--                    var arr = []--%>
-<%--                        ,thisData = data.concat().splice(obj.curr*obj.limit - obj.limit, obj.limit);--%>
-<%--                    layui.each(thisData, function(index, item){--%>
-<%--                        arr.push('<li>'+ item +'</li>');--%>
-<%--                    });--%>
-<%--                    return arr.join('');--%>
-<%--                }();--%>
-<%--            }--%>
-<%--        })--%>
-<%--        });--%>
-<%--     </script>--%>
+    <%--        laypage.render({--%>
+    <%--            elem: 'article'--%>
+    <%--            , count: articleList.length--%>
+    <%--            , limit: 15--%>
+    <%--            ,jump: function(obj){--%>
+    <%--                //模拟渲染--%>
+    <%--                document.getElementById('page_list').innerHTML = function(){--%>
+    <%--                    var arr = []--%>
+    <%--                        ,thisData = data.concat().splice(obj.curr*obj.limit - obj.limit, obj.limit);--%>
+    <%--                    layui.each(thisData, function(index, item){--%>
+    <%--                        arr.push('<li>'+ item +'</li>');--%>
+    <%--                    });--%>
+    <%--                    return arr.join('');--%>
+    <%--                }();--%>
+    <%--            }--%>
+    <%--        })--%>
+    <%--        });--%>
+    <%--     </script>--%>
 
     <script>
     </script>

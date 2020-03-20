@@ -9,6 +9,7 @@ import com.zhuqiu.service.ArticleService;
 import com.zhuqiu.service.CategoryService;
 import com.zhuqiu.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,6 +20,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.io.File;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author zhuqiu
@@ -40,19 +42,41 @@ public class HomeController {
     @Autowired
     private CategoryService categoryService;
 
+    @Autowired
+    private RedisTemplate redisTemplate;
+
     @RequestMapping("")
-    public String home(Model model){
+    public String home(Model model) {
         HashMap<String, Object> top = new HashMap<>();
         ArrayList<Integer> statusList = new ArrayList<>();
         statusList.add(2);
         top.put("articleStatus", statusList);
-        List<Article> topList = articleService.listAllNotWithContent(top);
+
+        List<Article> topList;
+        if (redisTemplate.opsForValue().get("topList") != null) {
+            topList = (List<Article>) redisTemplate.opsForValue().get("topList");
+        } else {
+            topList = articleService.listAllNotWithContent(top);
+            redisTemplate.opsForValue().set("topList", topList, 1, TimeUnit.HOURS);
+        }
         model.addAttribute("topList", topList);
 
-        List<Article> articleByComment = functionService.listArticleByCommentCount(10);
+        List<Article> articleByComment;
+        if (redisTemplate.opsForValue().get("articleByC") != null) {
+            articleByComment = (List<Article>) redisTemplate.opsForValue().get("articleByC");
+        } else {
+            articleByComment = functionService.listArticleByCommentCount(10);
+            redisTemplate.opsForValue().set("articleByC", articleByComment, 1, TimeUnit.HOURS);
+        }
         model.addAttribute("articleByComment", articleByComment);
 
-        List<Article> articleByUpdate = functionService.getLastUpdateArticle(10);
+        List<Article> articleByUpdate;
+        if (redisTemplate.opsForValue().get("articleByUp") != null) {
+            articleByUpdate = (List<Article>) redisTemplate.opsForValue().get("articleByUp");
+        } else {
+            articleByUpdate = functionService.getLastUpdateArticle(10);
+            redisTemplate.opsForValue().set("articleByUp", articleByUpdate, 1, TimeUnit.HOURS);
+        }
         model.addAttribute("articleByUpdate", articleByUpdate);
 
         sideItem(model);
@@ -61,13 +85,13 @@ public class HomeController {
     }
 
     @RequestMapping("/login")
-    public String login(){
+    public String login() {
         return "/Home/login";
     }
 
     @ResponseBody
     @RequestMapping(value = "/loginVerify", method = RequestMethod.POST)
-    public String loginVerify(HttpServletRequest request){
+    public String loginVerify(HttpServletRequest request) {
         Map<String, Object> map = new HashMap<>();
         String username = request.getParameter("userName");
         String password = request.getParameter("userPass");
@@ -93,13 +117,13 @@ public class HomeController {
 
 
     @RequestMapping("/register")
-    public String register(){
+    public String register() {
         return "/Home/reg";
     }
 
     @ResponseBody
     @RequestMapping(value = "/regVerify", method = RequestMethod.POST)
-    public String regVerify(HttpServletRequest request){
+    public String regVerify(HttpServletRequest request) {
         Map<String, Object> map = new HashMap<>();
         String userName = request.getParameter("userName");
         String userNickname = request.getParameter("userNickname");
@@ -138,21 +162,34 @@ public class HomeController {
 
 
     @RequestMapping(value = "/logout")
-    public String logout(HttpSession session)  {
+    public String logout(HttpSession session) {
         session.removeAttribute("user");
         session.invalidate();
         return "redirect:/home/login";
     }
 
-    public void sideItem(Model model){
+    public void sideItem(Model model) {
         HashMap<String, Object> notice = new HashMap<>();
         ArrayList<Integer> statusList = new ArrayList<>();
         statusList.add(3);
         notice.put("articleStatus", statusList);
-        List<Article> noticeList = articleService.listAllNotWithContent(notice);
+
+        List<Article> noticeList;
+        if (redisTemplate.opsForValue().get("noticeList") != null) {
+            noticeList = (List<Article>) redisTemplate.opsForValue().get("noticeList");
+        } else {
+            noticeList = articleService.listAllNotWithContent(notice);
+            redisTemplate.opsForValue().set("noticeList", noticeList, 1, TimeUnit.HOURS);
+        }
         model.addAttribute("noticeList", noticeList);
 
-        List<Category> allCategory = categoryService.listCategoryWithArticleCount();
+        List<Category> allCategory;
+        if (redisTemplate.opsForValue().get("allCategory") != null) {
+            allCategory = (List<Category>) redisTemplate.opsForValue().get("allCategory");
+        } else {
+            allCategory = categoryService.listCategoryWithArticleCount();
+            redisTemplate.opsForValue().set("allCategory", allCategory, 1, TimeUnit.HOURS);
+        }
         model.addAttribute("allCategory", allCategory);
 
     }

@@ -17,12 +17,13 @@
     <context:component-scan base-package="com.zhuqiu.mapper" />
     <!-- 配置整合mybatis -->
     <!-- 1.关联数据库文件 -->
-    <context:property-placeholder location="classpath:druid.properties"/>
+    <context:property-placeholder location="classpath:druid.properties" ignore-unresolvable="true"/>
+    <context:property-placeholder location="classpath:redis.properties" ignore-unresolvable="true"/>
 
     <!-- 2.数据库连接池 -->
     <!--数据库连接池
-dbcp  半自动化操作  不能自动连接
-c3p0  自动化操作（自动的加载配置文件 并且设置到对象里面）
+        dbcp  半自动化操作  不能自动连接
+        c3p0  自动化操作（自动的加载配置文件 并且设置到对象里面）
     -->
     <bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource"
           init-method="init" destroy-method="close">
@@ -37,6 +38,34 @@ c3p0  自动化操作（自动的加载配置文件 并且设置到对象里面�
         <property name="maxActive" value="${druid.maxActive}" />
         <!-- 配置从连接池获取连接等待超时的时间 -->
         <property name="maxWait" value="${druid.maxWait}" />
+    </bean>
+
+    <bean id="poolConfig" class="redis.clients.jedis.JedisPoolConfig">
+        <!-- 最大空闲数 -->
+        <property name="maxIdle" value="${redis.maxIdle}"></property>
+        <!-- 最大连接数 -->
+        <property name="maxTotal" value="${redis.maxTotal}"></property>
+        <!-- 最大等待时间 -->
+        <property name="maxWaitMillis" value="${redis.maxWaitMillis}"></property>
+    </bean>
+
+    <bean id="redisFactory" class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory">
+        <property name="hostName" value="${redis.host}"></property>
+        <property name="port" value="${redis.port}"></property>
+        <!-- <property name="password" value="${redis.pass}"></property> -->
+        <property name="poolConfig" ref="poolConfig"></property>
+    </bean>
+
+
+    <!-- 配置 key 和 value 的序列化器 -->
+    <bean id="jdkSerializationRedisSerializer" class="org.springframework.data.redis.serializer.JdkSerializationRedisSerializer"/>
+    <bean id="stringRedisSerializer" class="org.springframework.data.redis.serializer.StringRedisSerializer"/>
+
+    <!-- 配置Redis模板对象 -->
+    <bean id="redisTemplate" class="org.springframework.data.redis.core.RedisTemplate">
+        <property name="connectionFactory" ref="redisFactory"></property>
+        <property name="keySerializer" ref="stringRedisSerializer"></property>
+        <property name="valueSerializer" ref="jdkSerializationRedisSerializer"></property>
     </bean>
 
     <!-- 3.配置SqlSessionFactory对象 -->

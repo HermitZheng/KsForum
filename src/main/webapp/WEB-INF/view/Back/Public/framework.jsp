@@ -65,22 +65,28 @@
                     <a class="" href="javascript:;">文章</a>
                     <dl class="layui-nav-child">
                         <dd><a href="/back/article">全部文章</a></dd>
+                        <dd><a href="/back/article/top">置顶文章</a></dd>
+                        <dd><a href="/back/article/draft">草稿文章</a></dd>
                         <dd><a href="/back/article/insert">写文章</a></dd>
-                        <dd><a href="/back/category">全部分类</a></dd>
                     </dl>
                 </li>
-                <li class="layui-nav-item">
-                    <a href="javascript:;">页面</a>
-                    <dl class="layui-nav-child">
-                        <dd><a href="/admin/page">全部页面</a></dd>
-                        <dd><a href="/admin/page/insert">添加页面</a></dd>
-                    </dl>
+                <li class="layui-nav-item layui-nav-itemed">
+                    <a href="/back/category">
+                        全部分类
+                    </a>
                 </li>
+<%--                <li class="layui-nav-item">--%>
+<%--                    <a href="javascript:;">页面</a>--%>
+<%--                    <dl class="layui-nav-child">--%>
+<%--                        <dd><a href="/admin/page">全部页面</a></dd>--%>
+<%--                        <dd><a href="/admin/page/insert">添加页面</a></dd>--%>
+<%--                    </dl>--%>
+<%--                </li>--%>
                 <li class="layui-nav-item">
                     <a href="javascript:;">公告</a>
                     <dl class="layui-nav-child">
-                        <dd><a href="/admin/notice">全部公告</a></dd>
-                        <dd><a href="/admin/notice/insert">添加公告</a></dd>
+                        <dd><a href="/back/article/notice">全部公告</a></dd>
+                        <dd><a href="/back/article/insert">添加公告</a></dd>
                     </dl>
                 </li>
                 <li class="layui-nav-item">
@@ -97,13 +103,13 @@
                         <dd><a href="/back/user/insert">添加用户</a></dd>
                     </dl>
                 </li>
-                <li class="layui-nav-item">
-                    <a href="javascript:;">设置</a>
-                    <dl class="layui-nav-child">
-                        <dd><a href="/admin/menu">菜单</a></dd>
-                        <dd><a href="/admin/options">主要选项</a></dd>
-                    </dl>
-                </li>
+<%--                <li class="layui-nav-item">--%>
+<%--                    <a href="javascript:;">设置</a>--%>
+<%--                    <dl class="layui-nav-child">--%>
+<%--                        <dd><a href="/admin/menu">菜单</a></dd>--%>
+<%--                        <dd><a href="/admin/options">主要选项</a></dd>--%>
+<%--                    </dl>--%>
+<%--                </li>--%>
             </ul>
         </div>
     </div>

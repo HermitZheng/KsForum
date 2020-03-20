@@ -9,6 +9,7 @@ import com.zhuqiu.pojo.Comment;
 import com.zhuqiu.pojo.User;
 import com.zhuqiu.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -19,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author zhuqiu
@@ -44,15 +46,25 @@ public class ArticleController {
     @Autowired
     private CommentService commentService;
 
+    @Autowired
+    private RedisTemplate redisTemplate;
+
 
     @ResponseBody
     @RequestMapping("/get")
-    public String getArticleList(){
+    public String getArticleList() {
         HashMap<String, Object> criteria = new HashMap<>();
         ArrayList<Integer> statusList = new ArrayList<>();
         statusList.add(1);
         criteria.put("articleStatus", statusList);
-        List<Article> articleList = articleService.listAllNotWithContent(criteria);
+
+        List<Article> articleList;
+        if (redisTemplate.opsForValue().get("listNoContent") != null) {
+            articleList = (List<Article>) redisTemplate.opsForValue().get("listNoContent");
+        } else {
+            articleList = articleService.listAllNotWithContent(criteria);
+            redisTemplate.opsForValue().set("listNoContent", articleList, 1, TimeUnit.HOURS);
+        }
 
         String json = JSON.toJSONString(articleList);
 
@@ -62,7 +74,7 @@ public class ArticleController {
 
 
     @RequestMapping("/search")
-    public String search(HttpServletRequest request, Model model){
+    public String search(HttpServletRequest request, Model model) {
         String articleTitle = request.getParameter("articleTitle");
         HashMap<String, Object> criteria = new HashMap<>();
         ArrayList<Integer> statusList = new ArrayList<>();
@@ -94,10 +106,31 @@ public class ArticleController {
         statusList.add(2);
         criteria.put("articleStatus", statusList);
         model.addAttribute("pageUrlPrefix", "/home/article/page");
-        PageInfo<Article> articlePageInfo = functionService.pageArticle(pageIndex, pageSize, criteria);
 
+        PageInfo<Article> articlePageInfo;
+        if (redisTemplate.opsForValue().get("page_" + pageIndex) != null) {
+            articlePageInfo = (PageInfo<Article>) redisTemplate.opsForValue().get("page_" + pageIndex);
+        } else {
+            articlePageInfo = functionService.pageArticle(pageIndex, pageSize, criteria);
+            redisTemplate.opsForValue().set("page_" + pageIndex, articlePageInfo, 1, TimeUnit.HOURS);
+        }
+
+
+        int total = (int) Math.ceil(articlePageInfo.getTotal() / (pageSize * 1.0));
         model.addAttribute("articleList", articlePageInfo);
+        model.addAttribute("pageIndex", pageIndex);
+        model.addAttribute("total", total);
 
+        if (pageIndex == total) {
+            model.addAttribute("hasNextPage", false);
+        } else {
+            model.addAttribute("hasNextPage", true);
+        }
+        if (pageIndex == 1) {
+            model.addAttribute("hasPrePage", false);
+        } else {
+            model.addAttribute("hasPrePage", true);
+        }
         sideItem(model);
 
         return "/Home/Article/index";
@@ -105,8 +138,8 @@ public class ArticleController {
 
     @RequestMapping("/{articleId}")
     public String article(@PathVariable("articleId") Integer articleId,
-                          Model model, HttpSession session){
-        if (session.getAttribute("user") != null){
+                          Model model, HttpSession session) {
+        if (session.getAttribute("user") != null) {
             User user = (User) session.getAttribute("user");
             List<Integer> idList = userService.listFavoriteArticleId(user.getUserId());
             model.addAttribute("isFav", idList.contains(articleId));
@@ -123,14 +156,13 @@ public class ArticleController {
         model.addAttribute("commentList", commentList);
 
 
-
         sideItem(model);
 
         return "Home/Article/detail";
     }
 
     @RequestMapping("/write")
-    public String write(Model model){
+    public String write(Model model) {
         List<Category> categoryList = categoryService.listCategory();
         model.addAttribute("categoryList", categoryList);
 
@@ -138,7 +170,7 @@ public class ArticleController {
     }
 
     @RequestMapping("/insertSubmit")
-    public String insertSubmit(HttpSession session, ArticleParam param){
+    public String insertSubmit(HttpSession session, ArticleParam param) {
         User user = (User) session.getAttribute("user");
         Article article = new Article();
         if (user != null) {
@@ -155,15 +187,19 @@ public class ArticleController {
         article.setArticleUpdateTime(date);
 
         List<Category> categoryList = new ArrayList<>();
-        if (param.getArticleParentCategoryId() != null){
+        if (param.getArticleParentCategoryId() != null) {
             categoryList.add(new Category(param.getArticleParentCategoryId()));
-            if (param.getArticleChildCategoryId() != null){
+            if (param.getArticleChildCategoryId() != null) {
                 categoryList.add(new Category(param.getArticleChildCategoryId()));
             }
         }
         article.setCategoryList(categoryList);
 
         articleService.insertArticle(article);
+
+        redisTemplate.delete("listNoContent");
+        redisTemplate.delete("articleByC");
+        redisTemplate.delete("articleByUp");
 
         return "redirect:/home/user/index";
     }
@@ -174,20 +210,26 @@ public class ArticleController {
                          HttpSession session) {
         User user = (User) session.getAttribute("user");
         Article article = articleService.findArticleById(articleId);
-        if (!user.getUserId().equals(article.getArticleUserId())){
+        if (!user.getUserId().equals(article.getArticleUserId())) {
             return "redirect:/home/user/index";
         }
         articleService.deleteArticle(articleId);
+
+        redisTemplate.delete("listNoContent");
+        redisTemplate.delete("articleByC");
+        redisTemplate.delete("articleByUp");
+        redisTemplate.delete("topList");
+
         return "redirect:/home/user/index";
     }
 
 
     @RequestMapping("/edit/{articleId}")
     public String edit(@PathVariable("articleId") Integer articleId, Model model,
-                       HttpSession session){
+                       HttpSession session) {
         User user = (User) session.getAttribute("user");
         Article article = articleService.findArticleById(articleId);
-        if (!article.getArticleUserId().equals(user.getUserId())){
+        if (!article.getArticleUserId().equals(user.getUserId())) {
             return "redirect:/home/index";
         }
 //        System.out.println(article);
@@ -198,7 +240,7 @@ public class ArticleController {
     }
 
     @RequestMapping(value = "/editSubmit", method = RequestMethod.POST)
-    public String editSubmit(ArticleParam articleParam){
+    public String editSubmit(ArticleParam articleParam) {
         Article article = new Article();
         article.setArticleId(articleParam.getArticleId());
         article.setArticleTitle(articleParam.getArticleTitle());
@@ -222,19 +264,38 @@ public class ArticleController {
         article.setCategoryList(categoryList);
 
         articleService.updateArticleDetail(article);
+
+        redisTemplate.delete("listNoContent");
+        redisTemplate.delete("articleByC");
+        redisTemplate.delete("articleByUp");
+
         return "redirect:/home/user/index";
     }
 
-    public void sideItem(Model model){
+    public void sideItem(Model model) {
         HashMap<String, Object> notice = new HashMap<>();
         ArrayList<Integer> statusList = new ArrayList<>();
         statusList.add(3);
         notice.put("articleStatus", statusList);
-        List<Article> noticeList = articleService.listAllNotWithContent(notice);
+
+        List<Article> noticeList;
+        if (redisTemplate.opsForValue().get("noticeList") != null) {
+            noticeList = (List<Article>) redisTemplate.opsForValue().get("noticeList");
+        } else {
+            noticeList = articleService.listAllNotWithContent(notice);
+            redisTemplate.opsForValue().set("noticeList", noticeList, 1, TimeUnit.HOURS);
+        }
         model.addAttribute("noticeList", noticeList);
 
-        List<Category> allCategory = categoryService.listCategoryWithArticleCount();
+        List<Category> allCategory;
+        if (redisTemplate.opsForValue().get("allCategory") != null) {
+            allCategory = (List<Category>) redisTemplate.opsForValue().get("allCategory");
+        } else {
+            allCategory = categoryService.listCategoryWithArticleCount();
+            redisTemplate.opsForValue().set("allCategory", allCategory, 1, TimeUnit.HOURS);
+        }
         model.addAttribute("allCategory", allCategory);
+
     }
 
 }

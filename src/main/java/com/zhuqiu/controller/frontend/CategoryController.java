@@ -9,6 +9,7 @@ import com.zhuqiu.service.ArticleFunctionService;
 import com.zhuqiu.service.ArticleService;
 import com.zhuqiu.service.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -37,30 +38,46 @@ public class CategoryController {
     @Autowired
     private ArticleFunctionService functionService;
 
+    @Autowired
+    private RedisTemplate redisTemplate;
 
     @RequestMapping("")
     public String goIndex(Model model){
-        List<Category> categoryList = categoryService.listCategory();
-        List<CategoryTree> treeList = new ArrayList<>();
-        for (Category category : categoryList) {
-            if (category.getSuperCategoryId() == 0){
-                CategoryTree tree = new CategoryTree();
-                tree.setParentName(category.getCategoryName());
-                tree.setParentId(category.getCategoryId());
-                tree.setAllCount(articleService.countArticleByCategoryId(category.getCategoryId()));
-                List<CategoryTree.Child> childList = new ArrayList<>();
-                for (Category child : categoryList) {
-                    if (child.getSuperCategoryId().equals(category.getCategoryId())){
-                        CategoryTree.Child newChild = tree.new Child();
-                        newChild.setChildId(child.getCategoryId());
-                        newChild.setChildName(child.getCategoryName());
-                        newChild.setArticleCount(articleService.countArticleByCategoryId(child.getCategoryId()));
-                        childList.add(newChild);
+        List<CategoryTree> treeList;
+        List<Category> categoryList;
+
+        if (redisTemplate.opsForValue().get("categoryList") != null) {
+            categoryList = (List<Category>) redisTemplate.opsForValue().get("categoryList");
+        } else {
+            categoryList = categoryService.listCategory();
+            redisTemplate.opsForValue().set("categoryList", categoryList);
+        }
+
+        if (redisTemplate.opsForValue().get("categoryTree") != null) {
+            treeList = (List<CategoryTree>) redisTemplate.opsForValue().get("categoryTree");
+        } else {
+            treeList = new ArrayList<>();
+            for (Category category : categoryList) {
+                if (category.getSuperCategoryId() == 0){
+                    CategoryTree tree = new CategoryTree();
+                    tree.setParentName(category.getCategoryName());
+                    tree.setParentId(category.getCategoryId());
+                    tree.setAllCount(articleService.countArticleByCategoryId(category.getCategoryId()));
+                    List<CategoryTree.Child> childList = new ArrayList<>();
+                    for (Category child : categoryList) {
+                        if (child.getSuperCategoryId().equals(category.getCategoryId())){
+                            CategoryTree.Child newChild = tree.new Child();
+                            newChild.setChildId(child.getCategoryId());
+                            newChild.setChildName(child.getCategoryName());
+                            newChild.setArticleCount(articleService.countArticleByCategoryId(child.getCategoryId()));
+                            childList.add(newChild);
+                        }
                     }
+                    tree.setChildList(childList);
+                    treeList.add(tree);
                 }
-                tree.setChildList(childList);
-                treeList.add(tree);
             }
+            redisTemplate.opsForValue().set("categoryTree", treeList);
         }
         model.addAttribute("categoryList", categoryList);
         model.addAttribute("treeList", treeList);

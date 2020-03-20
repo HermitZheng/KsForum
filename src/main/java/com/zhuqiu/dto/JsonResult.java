@@ -4,6 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
+
 /**
  * @author zhuqiu
  * @date 2020/2/11
@@ -12,9 +14,10 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class JsonResult<T> {
+public class JsonResult<T> implements Serializable {
 
 
+    private static final long serialVersionUID = -9075611397573426736L;
     /**
      * 错误码
      */

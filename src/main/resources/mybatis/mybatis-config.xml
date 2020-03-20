@@ -8,6 +8,7 @@
     <settings>
         <setting name="mapUnderscoreToCamelCase" value="true"/>
         <setting name="logImpl" value="STDOUT_LOGGING"/>
+        <setting name="cacheEnabled" value="true"/>
     </settings>
 
     <typeAliases>

@@ -2,7 +2,6 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.zhuqiu.mapper.ArticleFunctionMapper">
-
     <resultMap id="BaseResultMap" type="com.zhuqiu.pojo.Article">
         <id column="article_id" jdbcType="INTEGER" property="articleId" />
         <result column="article_user_id" jdbcType="INTEGER" property="articleUserId" />

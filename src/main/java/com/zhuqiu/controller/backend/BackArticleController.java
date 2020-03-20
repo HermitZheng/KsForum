@@ -9,6 +9,7 @@ import com.zhuqiu.service.ArticleFunctionService;
 import com.zhuqiu.service.ArticleService;
 import com.zhuqiu.service.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -40,6 +41,9 @@ public class BackArticleController {
     @Autowired
     private CategoryService categoryService;
 
+    @Autowired
+    private RedisTemplate redisTemplate;
+
     /**
      * 列出所有文章并进行分页展示
      *
@@ -53,6 +57,56 @@ public class BackArticleController {
                         @RequestParam(required = false, defaultValue = "10") Integer pageSize,
                         Model model) {
         HashMap<String, Object> criteria = new HashMap<>();
+        model.addAttribute("pageUrlPrefix", "/back/article/page");
+        PageInfo<Article> articlePageInfo = functionService.pageArticle(pageIndex, pageSize, criteria);
+        model.addAttribute("pageInfo", articlePageInfo);
+        return "/Back/Article/index";
+    }
+
+    /**
+     * 列出所有公告并进行分页展示
+     *
+     * @param pageIndex
+     * @param pageSize
+     * @param model
+     * @return
+     */
+    @RequestMapping("/notice")
+    public String notice(@RequestParam(required = false, defaultValue = "1") Integer pageIndex,
+                        @RequestParam(required = false, defaultValue = "10") Integer pageSize,
+                        Model model) {
+        ArrayList<Integer> statusList = new ArrayList<>();
+        statusList.add(3);
+        HashMap<String, Object> criteria = new HashMap<>();
+        criteria.put("articleStatus", statusList);
+        model.addAttribute("pageUrlPrefix", "/back/article/page");
+        PageInfo<Article> articlePageInfo = functionService.pageArticle(pageIndex, pageSize, criteria);
+        model.addAttribute("pageInfo", articlePageInfo);
+        return "/Back/Article/index";
+    }
+
+    @RequestMapping("/top")
+    public String top(@RequestParam(required = false, defaultValue = "1") Integer pageIndex,
+                         @RequestParam(required = false, defaultValue = "10") Integer pageSize,
+                         Model model) {
+        ArrayList<Integer> statusList = new ArrayList<>();
+        statusList.add(2);
+        HashMap<String, Object> criteria = new HashMap<>();
+        criteria.put("articleStatus", statusList);
+        model.addAttribute("pageUrlPrefix", "/back/article/page");
+        PageInfo<Article> articlePageInfo = functionService.pageArticle(pageIndex, pageSize, criteria);
+        model.addAttribute("pageInfo", articlePageInfo);
+        return "/Back/Article/index";
+    }
+
+    @RequestMapping("/draft")
+    public String draft(@RequestParam(required = false, defaultValue = "1") Integer pageIndex,
+                         @RequestParam(required = false, defaultValue = "10") Integer pageSize,
+                         Model model) {
+        ArrayList<Integer> statusList = new ArrayList<>();
+        statusList.add(0);
+        HashMap<String, Object> criteria = new HashMap<>();
+        criteria.put("articleStatus", statusList);
         model.addAttribute("pageUrlPrefix", "/back/article/page");
         PageInfo<Article> articlePageInfo = functionService.pageArticle(pageIndex, pageSize, criteria);
         model.addAttribute("pageInfo", articlePageInfo);
@@ -98,8 +152,13 @@ public class BackArticleController {
         }
 
         article.setCategoryList(categoryList);
-
         articleService.insertArticle(article);
+
+        redisTemplate.delete("listNoContent");
+        redisTemplate.delete("articleByC");
+        redisTemplate.delete("articleByUp");
+        redisTemplate.delete("topList");
+
         return "redirect:/back/article";
     }
 
@@ -118,6 +177,12 @@ public class BackArticleController {
     @RequestMapping("/delete/{articleId}")
     public String delete(@PathVariable("articleId") Integer articleId) {
         articleService.deleteArticle(articleId);
+
+        redisTemplate.delete("listNoContent");
+        redisTemplate.delete("articleByC");
+        redisTemplate.delete("articleByUp");
+        redisTemplate.delete("topList");
+
         return "redirect:/back/article";
     }
 
@@ -157,6 +222,12 @@ public class BackArticleController {
         article.setCategoryList(categoryList);
 
         articleService.updateArticleDetail(article);
+
+        redisTemplate.delete("listNoContent");
+        redisTemplate.delete("articleByC");
+        redisTemplate.delete("articleByUp");
+        redisTemplate.delete("topList");
+
         return "redirect:/back/article";
     }
 }
