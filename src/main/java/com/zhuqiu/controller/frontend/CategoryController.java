@@ -109,7 +109,10 @@ public class CategoryController {
                              Model model){
 
         HashMap<String, Object> criteria = new HashMap<>();
-        criteria.put("articleStatus", 1);
+        ArrayList<Integer> statusList = new ArrayList<>();
+        statusList.add(1);
+        statusList.add(2);
+        criteria.put("articleStatus", statusList);
         criteria.put("categoryId", categoryId);
 
         Integer pageIndex = 1;
@@ -126,7 +129,9 @@ public class CategoryController {
 
     public void sideItem(Model model){
         HashMap<String, Object> notice = new HashMap<>();
-        notice.put("articleStatus", 3);
+        ArrayList<Integer> statusList = new ArrayList<>();
+        statusList.add(3);
+        notice.put("articleStatus", statusList);
         List<Article> noticeList = articleService.listAllNotWithContent(notice);
         model.addAttribute("noticeList", noticeList);
 

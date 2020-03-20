@@ -18,10 +18,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.io.File;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author zhuqiu
@@ -46,7 +43,9 @@ public class HomeController {
     @RequestMapping("")
     public String home(Model model){
         HashMap<String, Object> top = new HashMap<>();
-        top.put("articleStatus", 2);
+        ArrayList<Integer> statusList = new ArrayList<>();
+        statusList.add(2);
+        top.put("articleStatus", statusList);
         List<Article> topList = articleService.listAllNotWithContent(top);
         model.addAttribute("topList", topList);
 
@@ -147,7 +146,9 @@ public class HomeController {
 
     public void sideItem(Model model){
         HashMap<String, Object> notice = new HashMap<>();
-        notice.put("articleStatus", 3);
+        ArrayList<Integer> statusList = new ArrayList<>();
+        statusList.add(3);
+        notice.put("articleStatus", statusList);
         List<Article> noticeList = articleService.listAllNotWithContent(notice);
         model.addAttribute("noticeList", noticeList);
 

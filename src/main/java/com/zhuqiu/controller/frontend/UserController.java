@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -71,7 +72,9 @@ public class UserController {
         User user = (User) session.getAttribute("user");
         HashMap<String, Object> criteria = new HashMap<>();
         criteria.put("userId", user.getUserId());
-        criteria.put("articleStatus", 1);
+        ArrayList<Integer> statusList = new ArrayList<>();
+        statusList.add(1);
+        criteria.put("articleStatus", statusList);
         List<Article> articleList = articleService.listAllNotWithContent(criteria);
         model.addAttribute("articleList", articleList);
 

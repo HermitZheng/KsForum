@@ -33,7 +33,7 @@
         select count(*) from article_category_ref, article
         where category_id = #{categoryId}
         and article.article_id = article_category_ref.article_id
-        and article.article_status = 1
+        and (article_status = 1 or article_status = 2)
     </select>
     
     <select id="listCategoryIdByArticleId" parameterType="Integer" resultType="Integer">
